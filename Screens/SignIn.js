@@ -370,10 +370,10 @@ const styles = StyleSheet.create({
   bgimage1: {
     position: "absolute",
     width: wp("100%"),
-    height: hp("60%"),
+    height: hp("65%"),
     opacity: 0.11,
-    top: hp("15%"),
-    left: wp("15%"),
+    top: hp("10%"),
+    left: wp("14%"),
     borderBottomLeftRadius: 10,
     borderTopLeftRadius: 450,
     borderBottomRightRadius: 280,
