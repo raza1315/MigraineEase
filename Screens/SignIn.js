@@ -94,20 +94,6 @@ export default function SignIn() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.content}
         >
-          {/* <Image
-            source={require("../assets/migrainebg.jpeg")}
-            style={{
-              position: "absolute",
-              width: wp("100%"),
-              height: hp("60%"),
-              opacity: 0.12,
-              top: hp("70%"),
-              left: wp("12%"),
-              borderBottomLeftRadius: 30,
-              borderTopLeftRadius: 450,
-              backgroundColor: "rgba(0, 0, 0, 0.12)",
-            }}
-          /> */}
           <Image
             source={require("../assets/migrainebg.jpeg")}
             style={styles.bgimage1}
@@ -256,7 +242,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: "center",
     marginBottom: "auto",
-    marginTop: 15,
+    marginTop: 20,
   },
   appName: {
     fontSize: 32,
@@ -280,7 +266,7 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(255,255,255, 0.9)",
     textShadowRadius: 4,
     textShadowOffset: { width: 1, height: 1 },
-    marginTop:15
+    marginTop: 15,
   },
   inputContainer: {
     flexDirection: "row",
@@ -336,7 +322,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 25,
-    marginTop:5,
+    marginTop: 5,
     width: "100%",
   },
   orLine: {
