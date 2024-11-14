@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: "center",
-    marginBottom: "auto",
+    marginBottom: 50,
     marginTop: 20,
   },
   appName: {
@@ -322,8 +322,8 @@ const styles = StyleSheet.create({
   orContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 25,
-    marginTop: 5,
+    marginBottom: 20,
+    // marginTop: 5,
     width: "100%",
   },
   orLine: {
@@ -371,10 +371,10 @@ const styles = StyleSheet.create({
   bgimage1: {
     position: "absolute",
     width: wp("100%"),
-    height: hp("65%"),
+    height: hp("55%"),
     opacity: 0.11,
-    top: hp("10%"),
-    left: wp("14%"),
+    top: hp("15%"),
+    left: wp("13%"),
     borderBottomLeftRadius: 10,
     borderTopLeftRadius: 450,
     borderBottomRightRadius: 280,
