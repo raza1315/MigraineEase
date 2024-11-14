@@ -23,10 +23,7 @@ import {
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen";
 import Tooltip from "react-native-walkthrough-tooltip";
-
-const { width, height } = Dimensions.get("window");
-
-export default function SignInScreen() {
+export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -259,7 +256,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: "center",
     marginBottom: "auto",
-    marginTop: "auto",
+    marginTop: 15,
   },
   appName: {
     fontSize: 32,
@@ -283,6 +280,7 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(255,255,255, 0.9)",
     textShadowRadius: 4,
     textShadowOffset: { width: 1, height: 1 },
+    marginTop:15
   },
   inputContainer: {
     flexDirection: "row",
@@ -337,7 +335,8 @@ const styles = StyleSheet.create({
   orContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 25,
+    marginTop:5,
     width: "100%",
   },
   orLine: {
@@ -387,8 +386,8 @@ const styles = StyleSheet.create({
     width: wp("100%"),
     height: hp("60%"),
     opacity: 0.11,
-    top: hp("16%"),
-    left: wp("14%"),
+    top: hp("15%"),
+    left: wp("15%"),
     borderBottomLeftRadius: 10,
     borderTopLeftRadius: 450,
     borderBottomRightRadius: 280,
