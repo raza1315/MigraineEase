@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,18 +8,20 @@ import {
   SafeAreaView,
   Vibration,
   Animated,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { LinearGradient } from "expo-linear-gradient";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
-import LottieView from "lottie-react-native";
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import LottieView from 'lottie-react-native';
 
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 
 export default function Welcome() {
   const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
+  const slideAnim = useRef(new Animated.Value(100)).current;
+  const slideInleft = useRef(new Animated.Value(-100)).current;
+  const slideUp=useRef(new Animated.Value(50)).current
 
   useEffect(() => {
     Animated.parallel([
@@ -33,18 +35,23 @@ export default function Welcome() {
         duration: 1000,
         useNativeDriver: true,
       }),
+      Animated.timing(slideInleft,{
+        toValue: 0,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideUp, {
+        toValue: 0,
+        duration: 1000,
+        useNativeDriver: true,
+      })
     ]).start();
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#E6E6FA", "#F0F8FF"]} style={styles.gradient}>
-        <Animated.View
-          style={[
-            styles.content,
-            { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
-          ]}
-        >
+        <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideUp }] }]}>
           <View style={styles.logoContainer}>
             <FontAwesome5 name="brain" size={64} color="#6A5ACD" />
             <Text style={styles.appName}>MigraineEase</Text>
@@ -63,12 +70,7 @@ export default function Welcome() {
             Your journey to migraine relief and resilience begins here
           </Text>
           <View style={styles.featuresContainer}>
-            <Animated.View
-              style={[
-                styles.featureItem,
-                { opacity: fadeAnim, transform: [{ translateX: slideAnim }] },
-              ]}
-            >
+            <Animated.View style={[styles.featureItem, { opacity: fadeAnim, transform: [{ translateX: slideInleft }] }]}>
               <FontAwesome5
                 name="calendar-check"
                 size={24}
@@ -78,12 +80,7 @@ export default function Welcome() {
               <Text style={styles.featureText}>Track migraine attacks</Text>
             </Animated.View>
 
-            <Animated.View
-              style={[
-                styles.featureItem,
-                { opacity: fadeAnim, transform: [{ translateX: slideAnim }] },
-              ]}
-            >
+            <Animated.View style={[styles.featureItem, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
               <FontAwesome5
                 name="pills"
                 size={24}
@@ -93,12 +90,7 @@ export default function Welcome() {
               <Text style={styles.featureText}>Medication reminders</Text>
             </Animated.View>
 
-            <Animated.View
-              style={[
-                styles.featureItem,
-                { opacity: fadeAnim, transform: [{ translateX: slideAnim }] },
-              ]}
-            >
+            <Animated.View style={[styles.featureItem, { opacity: fadeAnim, transform: [{ translateX: slideInleft }] }]}>
               <FontAwesome5
                 name="chart-line"
                 size={24}
@@ -110,12 +102,7 @@ export default function Welcome() {
               </Text>
             </Animated.View>
 
-            <Animated.View
-              style={[
-                styles.featureItem,
-                { opacity: fadeAnim, transform: [{ translateX: slideAnim }] },
-              ]}
-            >
+            <Animated.View style={[styles.featureItem, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
               <Ionicons
                 name="people-sharp"
                 size={24}
@@ -125,12 +112,7 @@ export default function Welcome() {
               <Text style={styles.featureText}>Migraine Support Community</Text>
             </Animated.View>
 
-            <Animated.View
-              style={[
-                styles.featureItem,
-                { opacity: fadeAnim, transform: [{ translateX: slideAnim }] },
-              ]}
-            >
+            <Animated.View style={[styles.featureItem, { opacity: fadeAnim, transform: [{ translateX: slideInleft }] }]}>
               <FontAwesome5
                 name="head-side-virus"
                 size={24}

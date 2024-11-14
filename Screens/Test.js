@@ -1,136 +1,130 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
+  TextInput,
   TouchableOpacity,
   SafeAreaView,
-  Vibration,
-  Animated,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import LottieView from 'lottie-react-native';
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import { FontAwesome5 } from "@expo/vector-icons";
+import LottieView from "lottie-react-native";
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from "react-native-responsive-screen";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 export default function Test() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigation = useNavigation();
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
+  const handleSignIn = () => {
+    // Implement sign-in logic here
+    console.log("Sign in with:", email, password);
+  };
+
+  const handleGoogleSignIn = () => {
+    // Implement Google sign-in logic here
+    console.log("Sign in with Google");
+    navigation.navigate("welcome");
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#E6E6FA", "#F0F8FF"]} style={styles.gradient}>
-        <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.content}
+        >
           <View style={styles.logoContainer}>
-            <FontAwesome5 name="brain" size={64} color="#6A5ACD" />
+            <View style={styles.animationContainer}>
+              <LottieView
+                source={require("../assets/migrainelottie.json")}
+                autoPlay
+                loop
+                style={styles.animation}
+              />
+            </View>
             <Text style={styles.appName}>MigraineEase</Text>
           </View>
-
-          <View style={styles.animationContainer}>
-            <LottieView
-              source={require("../assets/welcomelottie.json")}
-              autoPlay
-              loop
-              style={styles.animation}
+          <Text style={styles.slogan}>Your path to relief begins here</Text>
+          <View style={styles.inputContainer}>
+            <FontAwesome5
+              name="envelope"
+              size={20}
+              color="#6A5ACD"
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="#A9A9A9"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
           </View>
 
-          <Text style={styles.welcomeText}>
-            Your journey to migraine relief and resilience begins here
-          </Text>
-          <View style={styles.featuresContainer}>
-            <Animated.View style={[styles.featureItem, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
-              <FontAwesome5
-                name="calendar-check"
-                size={24}
-                color="#6A5ACD"
-                style={styles.featureIcon}
-              />
-              <Text style={styles.featureText}>Track migraine attacks</Text>
-            </Animated.View>
+          <View style={styles.inputContainer}>
+            <FontAwesome5
+              name="lock"
+              size={20}
+              color="#6A5ACD"
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="#A9A9A9"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+          </View>
 
-            <Animated.View style={[styles.featureItem, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
-              <FontAwesome5
-                name="pills"
-                size={24}
-                color="#6A5ACD"
-                style={styles.featureIcon}
-              />
-              <Text style={styles.featureText}>Medication reminders</Text>
-            </Animated.View>
+          <TouchableOpacity style={styles.forgotPassword}>
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </TouchableOpacity>
 
-            <Animated.View style={[styles.featureItem, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
-              <FontAwesome5
-                name="chart-line"
-                size={24}
-                color="#6A5ACD"
-                style={styles.featureIcon}
-              />
-              <Text style={styles.featureText}>
-                Analyze triggers & patterns
-              </Text>
-            </Animated.View>
+          <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+            <Text style={styles.signInButtonText}>Sign In</Text>
+          </TouchableOpacity>
 
-            <Animated.View style={[styles.featureItem, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
-              <Ionicons
-                name="people-sharp"
-                size={24}
-                color="#6A5ACD"
-                style={styles.featureIcon}
-              />
-              <Text style={styles.featureText}>Migraine Support Community</Text>
-            </Animated.View>
-
-            <Animated.View style={[styles.featureItem, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
-              <FontAwesome5
-                name="head-side-virus"
-                size={24}
-                color="#6A5ACD"
-                style={styles.featureIcon}
-              />
-              <Text style={styles.featureText}>Pain relief techniques</Text>
-            </Animated.View>
+          <View style={styles.orContainer}>
+            <View style={styles.orLine} />
+            <Text style={styles.orText}>OR</Text>
+            <View style={styles.orLine} />
           </View>
 
           <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              Vibration.vibrate(50);
-              navigation.navigate("welcome");
-            }}
-            activeOpacity={0.7}
+            style={styles.googleButton}
+            onPress={handleGoogleSignIn}
           >
-            <Text style={styles.buttonText}>Get Started</Text>
+            <FontAwesome5
+              name="google"
+              size={20}
+              color="#FFFFFF"
+              style={styles.googleIcon}
+            />
+            <Text style={styles.googleButtonText}>Sign in with Google</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => console.log("Learn More")}
-          >
-            <Text style={styles.linkButtonText}>
-              Learn how MigraineEase works
-            </Text>
-          </TouchableOpacity>
-        </Animated.View>
+          <View style={styles.signUpContainer}>
+            <Text style={styles.signUpText}>Don't have an account? </Text>
+            <TouchableOpacity>
+              <Text style={styles.signUpLink}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
       </LinearGradient>
     </SafeAreaView>
   );
@@ -146,76 +140,119 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
+    justifyContent: "flex-start",
+    padding: 25,
   },
   logoContainer: {
     alignItems: "center",
-    marginBottom: 0,
+    marginBottom: "auto",
   },
   appName: {
     fontSize: 32,
     fontWeight: "bold",
     color: "#4B0082",
-    marginTop: 10,
+    marginTop: -30,
   },
   animationContainer: {
-    width: width * 0.7,
-    height: height * 0.3,
-    marginBottom: 0,
+    width: wp("80%"),
+    height: hp("25%"),
   },
   animation: {
     width: "100%",
     height: "100%",
   },
-  welcomeText: {
-    fontSize: 18,
-    textAlign: "center",
+  slogan: {
+    fontSize: 20,
+    fontWeight: "bold",
     color: "#4B0082",
-    marginBottom: 30,
-    lineHeight: 24,
-    width: "95%",
+    marginBottom: 20,
   },
-  button: {
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    marginBottom: 15,
+    paddingHorizontal: 15,
+    width: "100%",
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: 50,
+    color: "#4B0082",
+    fontSize: 16,
+  },
+  forgotPassword: {
+    alignSelf: "flex-end",
+    marginBottom: 20,
+  },
+  forgotPasswordText: {
+    color: "#6A5ACD",
+    fontSize: 14,
+  },
+  signInButton: {
     backgroundColor: "#6A5ACD",
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
+    width: "100%",
+    alignItems: "center",
     marginBottom: 20,
   },
-  buttonText: {
+  signInButtonText: {
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "bold",
   },
-  linkButton: {
-    marginTop: 10,
-    marginBottom: -30,
+  orContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    width: "100%",
   },
-  linkButtonText: {
+  orLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#A9A9A9",
+  },
+  orText: {
+    color: "#A9A9A9",
+    paddingHorizontal: 10,
+    fontSize: 16,
+  },
+  googleButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#DB4437",
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    width: "100%",
+    marginBottom: 20,
+  },
+  googleIcon: {
+    marginRight: 10,
+  },
+  googleButtonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  signUpContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  signUpText: {
+    color: "#4B0082",
+    fontSize: 16,
+  },
+  signUpLink: {
     color: "#6A5ACD",
     fontSize: 16,
-    textDecorationLine: "underline",
-  },
-  featuresContainer: {
-    width: "100%",
-    flexDirection: "column",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  featureItem: {
-    flexDirection: "row",
-    alignItems: "start",
-    marginBottom: 20,
-    width: "65%",
-  },
-  featureIcon: {
-    width: 32,
-    marginRight: 16,
-  },
-  featureText: {
-    fontSize: 16,
-    color: "#4B0082",
-    width: "fit-content",
+    fontWeight: "bold",
   },
 });
