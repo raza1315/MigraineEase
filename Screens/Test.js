@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,20 +12,20 @@ import {
   ScrollView,
   Animated,
   Alert,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { FontAwesome5 } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import { FontAwesome5 } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+} from "react-native-responsive-screen";
 
 export default function Test() {
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [image, setImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
@@ -42,7 +42,7 @@ export default function Test() {
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
@@ -58,7 +58,7 @@ export default function Test() {
     // Implement sign-up logic here
     setTimeout(() => {
       setIsLoading(false);
-      Alert.alert('Success', 'Account created successfully!');
+      Alert.alert("Success", "Account created successfully!");
       // navigation.navigate('Home');
     }, 2000);
   };
@@ -68,16 +68,16 @@ export default function Test() {
     // Implement Google sign-up logic here
     setTimeout(() => {
       setIsLoading(false);
-      Alert.alert('Success', 'Signed up with Google successfully!');
+      Alert.alert("Success", "Signed up with Google successfully!");
       // navigation.navigate('Home');
     }, 2000);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={['#E6E6FA', '#F0F8FF']} style={styles.gradient}>
+      <LinearGradient colors={["#E6E6FA", "#F0F8FF"]} style={styles.gradient}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.keyboardAvoidingView}
         >
           <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -96,7 +96,12 @@ export default function Test() {
               </TouchableOpacity>
 
               <View style={styles.inputContainer}>
-                <FontAwesome5 name="envelope" size={20} color="#6A5ACD" style={styles.inputIcon} />
+                <FontAwesome5
+                  name="envelope"
+                  size={20}
+                  color="#6A5ACD"
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   style={styles.input}
                   placeholder="Email"
@@ -109,7 +114,12 @@ export default function Test() {
               </View>
 
               <View style={styles.inputContainer}>
-                <FontAwesome5 name="user" size={20} color="#6A5ACD" style={styles.inputIcon} />
+                <FontAwesome5
+                  name="user"
+                  size={20}
+                  color="#6A5ACD"
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   style={styles.input}
                   placeholder="Username"
@@ -121,7 +131,12 @@ export default function Test() {
               </View>
 
               <View style={styles.inputContainer}>
-                <FontAwesome5 name="lock" size={20} color="#6A5ACD" style={styles.inputIcon} />
+                <FontAwesome5
+                  name="lock"
+                  size={20}
+                  color="#6A5ACD"
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   style={styles.input}
                   placeholder="Password"
@@ -138,7 +153,7 @@ export default function Test() {
                 disabled={isLoading}
               >
                 <Text style={styles.signUpButtonText}>
-                  {isLoading ? 'Creating Account...' : 'Sign Up'}
+                  {isLoading ? "Creating Account..." : "Sign Up"}
                 </Text>
               </TouchableOpacity>
 
@@ -153,13 +168,20 @@ export default function Test() {
                 onPress={handleGoogleSignUp}
                 disabled={isLoading}
               >
-                <FontAwesome5 name="google" size={20} color="#FFFFFF" style={styles.googleIcon} />
-                <Text style={styles.googleButtonText}>Continue with Google</Text>
+                <FontAwesome5
+                  name="google"
+                  size={20}
+                  color="#FFFFFF"
+                  style={styles.googleIcon}
+                />
+                <Text style={styles.googleButtonText}>
+                  Continue with Google
+                </Text>
               </TouchableOpacity>
 
               <View style={styles.loginContainer}>
                 <Text style={styles.loginText}>Already have an account? </Text>
-                <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
                   <Text style={styles.loginLink}>Log In</Text>
                 </TouchableOpacity>
               </View>
@@ -183,32 +205,32 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   content: {
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#4B0082',
+    fontWeight: "bold",
+    color: "#4B0082",
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 18,
-    color: '#6A5ACD',
+    color: "#6A5ACD",
     marginBottom: 30,
   },
   imageUpload: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -223,18 +245,18 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#F0F0F0',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#F0F0F0",
+    justifyContent: "center",
+    alignItems: "center",
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderRadius: 10,
     marginBottom: 15,
     paddingHorizontal: 15,
-    width: '100%',
+    width: "100%",
   },
   inputIcon: {
     marginRight: 10,
@@ -242,70 +264,70 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 50,
-    color: '#4B0082',
+    color: "#4B0082",
     fontSize: 16,
   },
   signUpButton: {
-    backgroundColor: '#6A5ACD',
+    backgroundColor: "#6A5ACD",
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
     marginTop: 10,
     marginBottom: 20,
   },
   signUpButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   orContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
-    width: '100%',
+    width: "100%",
   },
   orLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#A9A9A9',
+    backgroundColor: "#A9A9A9",
   },
   orText: {
-    color: '#A9A9A9',
+    color: "#A9A9A9",
     paddingHorizontal: 10,
     fontSize: 16,
   },
   googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#DB4437',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#DB4437",
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
-    width: '100%',
+    width: "100%",
     marginBottom: 20,
   },
   googleIcon: {
     marginRight: 10,
   },
   googleButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   loginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 20,
   },
   loginText: {
-    color: '#4B0082',
+    color: "#4B0082",
     fontSize: 16,
   },
   loginLink: {
-    color: '#6A5ACD',
+    color: "#6A5ACD",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
