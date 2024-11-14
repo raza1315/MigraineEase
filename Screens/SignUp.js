@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome5 } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import GoogleButton from "../Components/GoogleButton";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -77,16 +78,6 @@ export default function SignUp() {
     setTimeout(() => {
       setIsLoading(false);
       Alert.alert("Success", "Account created successfully!");
-      // navigation.navigate('Home');
-    }, 2000);
-  };
-
-  const handleGoogleSignUp = () => {
-    setIsLoading(true);
-    // Implement Google sign-up logic here
-    setTimeout(() => {
-      setIsLoading(false);
-      Alert.alert("Success", "Signed up with Google successfully!");
       // navigation.navigate('Home');
     }, 2000);
   };
@@ -209,23 +200,7 @@ export default function SignUp() {
                   <Text style={styles.orText}>OR</Text>
                   <View style={styles.orLine} />
                 </View>
-
-                <TouchableOpacity
-                  style={styles.googleButton}
-                  onPress={handleGoogleSignUp}
-                  disabled={isLoading}
-                >
-                  <FontAwesome5
-                    name="google"
-                    size={20}
-                    color="#FFFFFF"
-                    style={styles.googleIcon}
-                  />
-                  <Text style={styles.googleButtonText}>
-                    Continue with Google
-                  </Text>
-                </TouchableOpacity>
-
+                <GoogleButton />
                 <View style={styles.loginContainer}>
                   <Text style={styles.loginText}>
                     Already have an account?{" "}
@@ -361,25 +336,6 @@ const styles = StyleSheet.create({
     color: "#A9A9A9",
     paddingHorizontal: 10,
     fontSize: 16,
-  },
-  googleButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#DB4437",
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 30,
-    width: "100%",
-    marginBottom: 20,
-  },
-  googleIcon: {
-    marginRight: 10,
-  },
-  googleButtonText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "bold",
   },
   loginContainer: {
     flexDirection: "row",

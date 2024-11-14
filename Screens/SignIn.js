@@ -23,6 +23,7 @@ import {
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen";
 import Tooltip from "react-native-walkthrough-tooltip";
+import GoogleButton from "../Components/GoogleButton";
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -74,16 +75,6 @@ export default function SignIn() {
       setIsLoading(false);
       Alert.alert("Success", "Sign in successful!");
       // navigation.navigate('Home');
-    }, 2000);
-  };
-
-  const handleGoogleSignIn = () => {
-    setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      Alert.alert("Success", "Google sign in successful!");
-      navigation.navigate("welcome");
     }, 2000);
   };
 
@@ -198,25 +189,10 @@ export default function SignIn() {
             <Text style={styles.orText}>OR</Text>
             <View style={styles.orLine} />
           </View>
-
-          <TouchableOpacity
-            style={styles.googleButton}
-            onPress={handleGoogleSignIn}
-            disabled={isLoading}
-          >
-            <FontAwesome5
-              name="google"
-              size={20}
-              color="#FFFFFF"
-              style={styles.googleIcon}
-            />
-            <Text style={styles.googleButtonText}>Sign in with Google</Text>
-          </TouchableOpacity>
-
+          <GoogleButton />
           <View style={styles.signUpContainer}>
             <Text style={styles.signUpText}>Don't have an account? </Text>
-            <TouchableOpacity 
-              onPress={() => navigation.navigate("signUp")}>
+            <TouchableOpacity onPress={() => navigation.navigate("signUp")}>
               <Text style={styles.signUpLink}>Sign Up</Text>
             </TouchableOpacity>
           </View>
@@ -335,24 +311,6 @@ const styles = StyleSheet.create({
     color: "#A9A9A9",
     paddingHorizontal: 10,
     fontSize: 16,
-  },
-  googleButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#DB4437",
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 30,
-    width: "100%",
-    marginBottom: 20,
-  },
-  googleIcon: {
-    marginRight: 10,
-  },
-  googleButtonText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "bold",
   },
   signUpContainer: {
     flexDirection: "row",
