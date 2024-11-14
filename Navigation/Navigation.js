@@ -11,9 +11,9 @@ const Navigation = () => {
   return (
     <View style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="sign-in">
+        <Stack.Navigator initialRouteName="signIn">
           <Stack.Screen name="welcome" component={Welcome} options={{ headerShown: false }}/>
-          <Stack.Screen name="sign-in" component={SignIn} options={{ headerShown: false }}/>
+          <Stack.Screen name="signIn" component={SignIn} options={{ headerShown: false }}/>
           <Stack.Screen name="test" component={Test} options={{ headerShown: false }}/>
         </Stack.Navigator>
       </NavigationContainer>

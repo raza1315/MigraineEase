@@ -127,7 +127,7 @@ export default function Welcome() {
             style={styles.button}
             onPress={() => {
               Vibration.vibrate(50);
-              navigation.navigate("sign-in");
+              navigation.navigate("signIn");
             }}
             activeOpacity={0.7}
           >

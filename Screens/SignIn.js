@@ -215,7 +215,8 @@ export default function SignIn() {
 
           <View style={styles.signUpContainer}>
             <Text style={styles.signUpText}>Don't have an account? </Text>
-            <TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => navigation.navigate("signUp")}>
               <Text style={styles.signUpLink}>Sign Up</Text>
             </TouchableOpacity>
           </View>
