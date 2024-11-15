@@ -5,7 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 // initialize express app and setup middleware:
 const app = express();
-app.use(cors());
+app.use(cors({ origin: true }))
 app.use(bodyParser.json());
 
 // importing routers:

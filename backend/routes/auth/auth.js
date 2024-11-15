@@ -36,11 +36,14 @@ router.post("/signup", upload.single("image"), async (req, res) => {
   try {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
+      trx.rollback();
       return res.status(404).json({ error: "Missing Credentials" });
     }
     const existingmail = await trx("users").where({ email }).first();
     if (existingmail) {
-      return res.status(400).json({ error: "Email already exists" });
+      console.log("already exists");
+      trx.rollback();
+      return res.status(200).json({ error: "Email already exists" });
     }
     const imageUrl = req.file?.path;
     console.log(imageUrl);
@@ -54,7 +57,7 @@ router.post("/signup", upload.single("image"), async (req, res) => {
       updated_at: new Date(),
     }).returning("user_id");
     trx.commit();
-    res.status(200).json({ message: "Signup successful", userId: user.user_id });
+    res.status(201).json({ message: "Signup successful", userId: user.user_id });
   } catch (error) {
     console.log("Error in /signup", error);
     trx.rollback();

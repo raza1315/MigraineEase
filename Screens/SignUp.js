@@ -19,6 +19,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import GoogleButton from "../Components/GoogleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -98,41 +99,35 @@ export default function SignUp() {
           type: "image/jpeg",
         });
       }
-
-      const response = await fetch(
+      const response = await axios.post(
         `${process.env.EXPO_PUBLIC_SERVER_URL}/auth/signup`,
+        formData,
         {
-          method: "POST",
-          body: formData,
           headers: {
             "Content-Type": "multipart/form-data",
           },
         }
       );
-
-      const result = await response.json();
-      console.log(result);
-      if (response.status === 200) {
-        // const user_id = await AsyncStorage.getItem("userId");
-        await AsyncStorage.setItem("userId", JSON.stringify(result.userId));
-        Alert.alert("Success", result.message);
+      if (response.status === 201) {
+        await AsyncStorage.setItem("userId", JSON.stringify(response.data.userId));
+        Alert.alert("Success", response.data.message);
         setEmail("");
         setUsername("");
         setPassword("");
         setImage(null);
-        setIsLoading(false);
         navigation.navigate("home");
-      } else if (response.status === 400) {
+      } else if (response.status === 200) {
         setEmail("");
         setUsername("");
         setPassword("");
         setImage(null);
-        Alert.alert("Email already signed up", result.error);
+        Alert.alert("Email already signed up", response.data.error);
       } else {
-        Alert.alert("Error", result.error);
+        Alert.alert("Error", response.data.error);
       }
     } catch (error) {
-      Alert.alert("Error", error.message);
+      console.log(error);
+      Alert.alert("Network Error", error.message);
     } finally {
       setIsLoading(false);
     }
