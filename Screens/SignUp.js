@@ -18,6 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome5 } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import GoogleButton from "../Components/GoogleButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -64,22 +65,77 @@ export default function SignUp() {
     }
   };
 
-  const handleSignUp = () => {
-    setIsLoading(true);
-    setEmailError("");
+  const handleSignUp = async () => {
+    try {
+      setIsLoading(true);
+      setEmailError("");
 
-    if (!validateEmail(email)) {
-      setEmailError("Please enter a valid email address");
+      const trimmedEmail = email.trim();
+      const trimmedPassword = password.trim();
+      const trimmedUsername = username.trim();
+
+      if (!trimmedEmail || !trimmedPassword || !trimmedUsername || !image) {
+        setIsLoading(false);
+        Alert.alert("Error", "Please fill in all fields.");
+        return;
+      }
+
+      if (!validateEmail(email)) {
+        setEmailError("Please enter a valid email address");
+        setIsLoading(false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("username", trimmedUsername);
+      formData.append("email", trimmedEmail);
+      formData.append("password", trimmedPassword);
+
+      if (image) {
+        formData.append("image", {
+          uri: image,
+          name: "photo.jpg",
+          type: "image/jpeg",
+        });
+      }
+
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/auth/signup`,
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const result = await response.json();
+      console.log(result);
+      if (response.status === 200) {
+        // const user_id = await AsyncStorage.getItem("userId");
+        await AsyncStorage.setItem("userId", JSON.stringify(result.userId));
+        Alert.alert("Success", result.message);
+        setEmail("");
+        setUsername("");
+        setPassword("");
+        setImage(null);
+        setIsLoading(false);
+        navigation.navigate("home");
+      } else if (response.status === 400) {
+        setEmail("");
+        setUsername("");
+        setPassword("");
+        setImage(null);
+        Alert.alert("Email already signed up", result.error);
+      } else {
+        Alert.alert("Error", result.error);
+      }
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    // Implement sign-up logic here
-    setTimeout(() => {
-      setIsLoading(false);
-      Alert.alert("Success", "Account created successfully!");
-      // navigation.navigate('Home');
-    }, 2000);
   };
 
   return (
