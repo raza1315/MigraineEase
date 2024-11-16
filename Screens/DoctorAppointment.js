@@ -19,6 +19,8 @@ import {
 } from "react-native-responsive-screen";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useIsFocused } from "@react-navigation/native";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -76,11 +78,22 @@ const DoctorAppointment = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    setIsFormValid(doctorName !== "" && location !== "");
+    setIsFormValid(doctorName.trim() !== "" && location.trim() !== "");
   }, [doctorName, location]);
+  useEffect(() => {
+    if (isFocused) {
+      getUserId();
+    }
+  }, [isFocused]);
 
+  const getUserId = async () => {
+    const userId = await AsyncStorage.getItem("userId");
+    setUserId(userId);
+  };
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowDatePicker(false);
@@ -113,27 +126,76 @@ const DoctorAppointment = () => {
     });
   };
 
-  const handleSubmit = () => {
-    if (!isFormValid) {
+  const handleSubmit = async () => {
+    try {
+      if (!isFormValid) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Please fill in all required fields",
+        });
+        return;
+      }
+      if (new Date(date) <= new Date()) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Please select a time later than now.",
+        });
+        return;
+      }
+
+      const body = {
+        user_id: userId,
+        doctor_name: doctorName.trim(),
+        location: location.trim(),
+        appointment_date: date,
+        reason: notes.trim(),
+        created_at: new Date(),
+        reminder_sent: true,
+      };
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/notification/appointment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }
+      );
+      if (res.status === 200) {
+        await scheduleNotification();
+        Toast.show({
+          type: "success",
+          text1: "Appointment Scheduled",
+          text2:
+            "Your appointment has been scheduled and a notification has been set.",
+        });
+        setDate(new Date());
+        setDoctorName("");
+        setLocation("");
+        setNotes("");
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to schedule appointment",
+        });
+        setDate(new Date());
+        setDoctorName("");
+        setLocation("");
+        setNotes("");
+      }
+    } catch (error) {
+      console.log(error);
+      console.log(date.toLocaleString());
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "Please fill in all required fields",
+        text2: "Failed to schedule appointment",
       });
-      return;
     }
-    scheduleNotification();
-    Toast.show({
-      type: "success",
-      text1: "Appointment Booked",
-      text2:
-        "Your appointment has been scheduled and a notification has been set.",
-    });
-    setDate(new Date());
-    setDoctorName("");
-    setLocation("");
-    setNotes("");
-    // Here you would typically save the appointment to your app's state or database
   };
 
   return (
