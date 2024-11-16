@@ -8,7 +8,6 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
-  Dimensions,
   ActivityIndicator,
   Alert,
   Animated,
@@ -24,7 +23,8 @@ import {
 } from "react-native-responsive-screen";
 import Tooltip from "react-native-walkthrough-tooltip";
 import GoogleButton from "../Components/GoogleButton";
-import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useIsFocused } from "@react-navigation/native";
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,9 +35,8 @@ export default function SignIn() {
   const [showPasswordTooltip, setShowPasswordTooltip] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigation = useNavigation();
-
+  const isFocused = useIsFocused();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -45,6 +44,18 @@ export default function SignIn() {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  useEffect(() => {
+    if (isFocused) {
+      setTimeout(async () => {
+        const userid = await AsyncStorage.getItem("userId");
+        console.log(userid);
+        if (userid) {
+          navigation.navigate("home");
+        }
+      }, 1500);
+    }
+  }, [isFocused]);
 
   const validateEmail = (email) => {
     const re = /\S+@\S+\.\S+/;
@@ -77,24 +88,38 @@ export default function SignIn() {
       setIsLoading(false);
       return;
     }
-
-    const res = await axios.post(
+    const result = await fetch(
       `${process.env.EXPO_PUBLIC_SERVER_URL}/auth/signin`,
-      { email: trimmedEmail, password: trimmedPassword }
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          password: trimmedPassword,
+        }),
+      }
     );
-    if (res.status === 200) {
+    const res = await result.json();
+    console.log(res, result.status);
+    if (result.status === 200) {
+      await AsyncStorage.setItem("userId", JSON.stringify(res.userId));
       setIsLoading(false);
-      Alert.alert("Success", res.data.message);
-      navigation.navigate("Home");
+      setEmail("");
+      setPassword("");
+      Alert.alert("Success", res.message);
+      navigation.navigate("home");
+    } else if (result.status === 401) {
+      setIsLoading(false);
+      Alert.alert("Invalid Credentials", res.error);
+    } else if (result.status === 404) {
+      setIsLoading(false);
+      Alert.alert("Pls Sign Up", "User not signed up");
     } else {
       setIsLoading(false);
       Alert.alert("Error", "Sign in failed. Please try again.");
     }
-    setTimeout(() => {
-      setIsLoading(false);
-      Alert.alert("Success", "Sign in successful!");
-      // navigation.navigate('Home');
-    }, 2000);
   };
 
   return (
@@ -182,18 +207,18 @@ export default function SignIn() {
                 // onFocus={() => setShowPasswordTooltip(true)}
               />
               <FontAwesome5
-                    onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                    name={isPasswordVisible ? "eye" : "eye-slash"}
-                    style={{
-                      position: "absolute",
-                      right: 10,
-                      // top:"50%",
-                      bottom: "50%",
-                      transform: [{ translateY: "50%" }],
-                    }}
-                    size={20}
-                    color="#A9A9A9"
-                  />
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                name={isPasswordVisible ? "eye" : "eye-slash"}
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  // top:"50%",
+                  bottom: "50%",
+                  transform: [{ translateY: "50%" }],
+                }}
+                size={20}
+                color="#A9A9A9"
+              />
             </View>
           </Tooltip>
           {passwordError ? (

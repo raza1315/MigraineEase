@@ -65,5 +65,26 @@ router.post("/signup", upload.single("image"), async (req, res) => {
   }
 });
 
+// auth/signin
+router.post("/signin", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(404).json({ error: "Missing Credentials" });
+    }
+    const user = await db("users").where({ email }).first();
+    if (!user) {
+      return res.status(404).json({ error: "User not Signed up" });
+    }
+    if (user.password !== password) {
+      return res.status(401).json({ error: "Invalid password" });
+    }
+    res.status(200).json({ message: "Sign In Successful", userId: user.user_id });
+  } catch (error) {
+    console.log("Error in /signin", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // exporting router:
 module.exports = router;

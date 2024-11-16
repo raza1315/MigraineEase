@@ -18,7 +18,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome5 } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import GoogleButton from "../Components/GoogleButton";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 export default function SignUp() {
@@ -131,16 +130,11 @@ export default function SignUp() {
         }
       );
       if (response.status === 201) {
-        await AsyncStorage.setItem(
-          "userId",
-          JSON.stringify(response.data.userId)
-        );
         Alert.alert("Success", response.data.message);
         setEmail("");
         setUsername("");
         setPassword("");
         setImage(null);
-        navigation.navigate("home");
       } else if (response.status === 200) {
         setEmail("");
         setUsername("");
