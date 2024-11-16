@@ -13,7 +13,7 @@ const Navigation = () => {
   return (
     <View style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="test">
+        <Stack.Navigator initialRouteName="signIn">
           <Stack.Screen
             name="welcome"
             component={Welcome}

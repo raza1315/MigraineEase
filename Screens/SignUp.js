@@ -28,6 +28,9 @@ export default function SignUp() {
   const [image, setImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigation = useNavigation();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -52,6 +55,12 @@ export default function SignUp() {
     const re = /\S+@\S+\.\S+/;
     return re.test(email);
   };
+  const validateUsername = (username) => {
+    return username.length >= 3;
+  };
+  const validatePassword = (password) => {
+    return password.length >= 6;
+  };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -70,6 +79,8 @@ export default function SignUp() {
     try {
       setIsLoading(true);
       setEmailError("");
+      setPasswordError("");
+      setUsernameError("");
 
       const trimmedEmail = email.trim();
       const trimmedPassword = password.trim();
@@ -77,12 +88,23 @@ export default function SignUp() {
 
       if (!trimmedEmail || !trimmedPassword || !trimmedUsername || !image) {
         setIsLoading(false);
-        Alert.alert("Error", "Please fill in all fields.");
+        Alert.alert("Missing Fields", "Please fill in all fields.");
         return;
       }
 
-      if (!validateEmail(email)) {
+      if (!validateEmail(trimmedEmail)) {
         setEmailError("Please enter a valid email address");
+        setIsLoading(false);
+        return;
+      }
+      if (!validatePassword(trimmedPassword)) {
+        setPasswordError("Password must be at least 6 characters long");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!validateUsername(trimmedUsername)) {
+        setUsernameError("Username must be at least 3 characters long");
         setIsLoading(false);
         return;
       }
@@ -109,7 +131,10 @@ export default function SignUp() {
         }
       );
       if (response.status === 201) {
-        await AsyncStorage.setItem("userId", JSON.stringify(response.data.userId));
+        await AsyncStorage.setItem(
+          "userId",
+          JSON.stringify(response.data.userId)
+        );
         Alert.alert("Success", response.data.message);
         setEmail("");
         setUsername("");
@@ -215,10 +240,16 @@ export default function SignUp() {
                     placeholder="Username"
                     placeholderTextColor="#A9A9A9"
                     value={username}
-                    onChangeText={setUsername}
+                    onChangeText={(text) => {
+                      setUsername(text);
+                      setUsernameError("");
+                    }}
                     autoCapitalize="none"
                   />
                 </View>
+                {usernameError ? (
+                  <Text style={styles.errorText}>{usernameError}</Text>
+                ) : null}
 
                 <View style={styles.inputContainer}>
                   <FontAwesome5
@@ -232,10 +263,29 @@ export default function SignUp() {
                     placeholder="Password"
                     placeholderTextColor="#A9A9A9"
                     value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
+                    onChangeText={(text) => {
+                      setPassword(text);
+                      setPasswordError("");
+                    }}
+                    secureTextEntry={!isPasswordVisible}
+                  />
+                  <FontAwesome5
+                    onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                    name={isPasswordVisible ? "eye" : "eye-slash"}
+                    style={{
+                      position: "absolute",
+                      right: 10,
+                      // top:"50%",
+                      bottom: "50%",
+                      transform: [{ translateY: "50%" }],
+                    }}
+                    size={20}
+                    color="#A9A9A9"
                   />
                 </View>
+                {passwordError ? (
+                  <Text style={styles.errorText}>{passwordError}</Text>
+                ) : null}
                 <TouchableOpacity
                   style={styles.signUpButton}
                   onPress={handleSignUp}
@@ -322,6 +372,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     width: "100%",
     height: 50,
+    position: "relative",
   },
   inputIcon: {
     marginRight: 10,

@@ -24,6 +24,7 @@ import {
 } from "react-native-responsive-screen";
 import Tooltip from "react-native-walkthrough-tooltip";
 import GoogleButton from "../Components/GoogleButton";
+import axios from "axios";
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +33,7 @@ export default function SignIn() {
   const [passwordError, setPasswordError] = useState("");
   const [showEmailTooltip, setShowEmailTooltip] = useState(false);
   const [showPasswordTooltip, setShowPasswordTooltip] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigation = useNavigation();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -50,27 +52,44 @@ export default function SignIn() {
   };
 
   const validatePassword = (password) => {
-    return password.length >= 8;
+    return password.length >= 6;
   };
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     setIsLoading(true);
     setEmailError("");
     setPasswordError("");
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    if (!trimmedEmail || !trimmedPassword) {
+      setIsLoading(false);
+      return Alert.alert("Error", "Please fill in all fields.");
+    }
 
-    if (!validateEmail(email)) {
+    if (!validateEmail(trimmedEmail)) {
       setEmailError("Please enter a valid email address");
       setIsLoading(false);
       return;
     }
 
     if (!validatePassword(password)) {
-      setPasswordError("Password must be at least 8 characters long");
+      setPasswordError("Password must be at least 6 characters long");
       setIsLoading(false);
       return;
     }
 
-    // Simulate API call
+    const res = await axios.post(
+      `${process.env.EXPO_PUBLIC_SERVER_URL}/auth/signin`,
+      { email: trimmedEmail, password: trimmedPassword }
+    );
+    if (res.status === 200) {
+      setIsLoading(false);
+      Alert.alert("Success", res.data.message);
+      navigation.navigate("Home");
+    } else {
+      setIsLoading(false);
+      Alert.alert("Error", "Sign in failed. Please try again.");
+    }
     setTimeout(() => {
       setIsLoading(false);
       Alert.alert("Success", "Sign in successful!");
@@ -159,9 +178,22 @@ export default function SignIn() {
                   setPassword(text);
                   setPasswordError("");
                 }}
-                secureTextEntry
+                secureTextEntry={!isPasswordVisible}
                 // onFocus={() => setShowPasswordTooltip(true)}
               />
+              <FontAwesome5
+                    onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                    name={isPasswordVisible ? "eye" : "eye-slash"}
+                    style={{
+                      position: "absolute",
+                      right: 10,
+                      // top:"50%",
+                      bottom: "50%",
+                      transform: [{ translateY: "50%" }],
+                    }}
+                    size={20}
+                    color="#A9A9A9"
+                  />
             </View>
           </Tooltip>
           {passwordError ? (
@@ -253,6 +285,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingHorizontal: 15,
     width: "100%",
+    position: "relative",
   },
   inputIcon: {
     marginRight: 10,
