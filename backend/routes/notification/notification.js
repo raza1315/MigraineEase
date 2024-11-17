@@ -38,7 +38,6 @@ router.post("/appointment", async (req, res) => {
 router.get("/getAppointmentsRecords/:id", async (req, res) => {
   try {
     const userId = req.params.id;
-    console.log("getAppointmentsRecords");
     const notifications = await db("appointments").select("*").where({
       user_id: userId,
     });
@@ -83,7 +82,6 @@ router.post("/medicine-reminder", async (req, res) => {
 router.get("/getMedicationsRecords/:id", async (req, res) => {
   try {
     const userId = req.params.id;
-    console.log("getMedicationsRecords");
     const notifications = await db("medications").select("*").where({
       user_id: userId,
     });
