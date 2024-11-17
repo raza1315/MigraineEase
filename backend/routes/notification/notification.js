@@ -49,30 +49,47 @@ router.get("/getAppointmentsRecords/:id", async (req, res) => {
   }
 });
 
-// /notification/medicine
-router.post("/medicine", async (req, res) => {
+// /notification/medicine-reminder
+router.post("/medicine-reminder", async (req, res) => {
   try {
     const {
       user_id,
       medicine_name,
       dosage,
-      frequency,
       start_date,
       end_date,
       created_at,
+      notes,
+      reminder_time,
     } = req.body;
-    // const notifications = await db("medicines").insert({
-    //   user_id,
-    //   medicine_name,
-    //   dosage,
-    //   frequency,
-    //   start_date,
-    //   end_date,
-    //   created_at,
-    // });
-    // res.status(200).json(notifications);
+    const notifications = await db("medications").insert({
+      user_id,
+      medicine_name,
+      dosage,
+      start_date,
+      end_date,
+      created_at,
+      reminder_time,
+      notes,
+    });
+    res.status(200).json({ message: "Records added successfully" });
   } catch (error) {
     console.log("Error in /notification/medicine", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// /notification/getMedicationsRecords
+router.get("/getMedicationsRecords/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    console.log("getMedicationsRecords");
+    const notifications = await db("medications").select("*").where({
+      user_id: userId,
+    });
+    res.status(200).json(notifications);
+  } catch (error) {
+    console.log("Error in /notification/getMedications", error);
     res.status(500).json({ error: error.message });
   }
 });

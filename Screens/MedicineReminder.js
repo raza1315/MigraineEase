@@ -70,7 +70,7 @@ const WaveCircle = ({ delay = 0, duration = 2000 }) => {
   );
 };
 
-const MedicineReminderScreen = () => {
+const MedicineReminder = () => {
   const [medicineName, setMedicineName] = useState("");
   const [dosage, setDosage] = useState("");
   const [notes, setNotes] = useState("");
@@ -565,4 +565,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MedicineReminderScreen;
+export default MedicineReminder;
