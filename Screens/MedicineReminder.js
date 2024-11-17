@@ -20,7 +20,7 @@ import {
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -85,6 +85,7 @@ const MedicineReminder = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [userId, setUserId] = useState(null);
   const isFocused = useIsFocused();
+  const navigation = useNavigation();
 
   useEffect(() => {
     setIsFormValid(medicineName.trim() !== "" && dosage.trim() !== "");
@@ -222,6 +223,19 @@ const MedicineReminder = () => {
   return (
     <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#4B0082" />
+        </TouchableOpacity>
+         <TouchableOpacity
+          style={styles.remindersButton}
+          onPress={() => navigation.navigate("medsRecords")}
+        >
+          <FontAwesome5 name="notes-medical" size={24} color="#6A5ACD" />
+          <Text style={{ color: "#6A5ACD",fontWeight: "600" }}>Reminders</Text>
+        </TouchableOpacity>
         <Image
           source={require("../assets/migrainebg.jpeg")}
           style={styles.bgImage1}
@@ -515,6 +529,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 20,
+    marginHorizontal: 22,
   },
   infoIcon: {
     marginRight: 10,
@@ -562,6 +577,44 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#4B0082",
     minHeight: 100,
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 10,
+    backgroundColor: "white",
+    borderRadius: 50,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3,
+  },
+  remindersButton: {
+    position: "absolute",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+    bottom: 30,
+    right: 25,
+    zIndex: 10,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3,
   },
 });
 

@@ -15,9 +15,9 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 
 const AppointmentListScreen = () => {
   const [activeTab, setActiveTab] = useState("upcoming");
@@ -31,12 +31,15 @@ const AppointmentListScreen = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const isFocused = useIsFocused();
-
+  const navigation = useNavigation();
   useEffect(() => {
     const getUserId = async () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
         setUserId(storedUserId ? parseInt(storedUserId) : null);
+        if (!storedUserId) {
+          navigation.navigate("signIn");
+        }
       } catch (err) {
         console.error("Error getting userId:", err);
       }
@@ -79,12 +82,12 @@ const AppointmentListScreen = () => {
     const now = new Date();
     let filtered = appointments.filter((app) => {
       const appDate = new Date(app.appointment_date);
-      const istAppDate = new Date(appDate.getTime() + (5.5 * 60 * 60 * 1000)); // Convert to IST
+      const istAppDate = new Date(appDate.getTime() + 5.5 * 60 * 60 * 1000); // Convert to IST
       return activeTab === "upcoming" ? istAppDate > now : istAppDate <= now;
     });
 
     if (searchQuery) {
-      filtered = filtered.filter(app => 
+      filtered = filtered.filter((app) =>
         app.doctor_name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
@@ -100,7 +103,7 @@ const AppointmentListScreen = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const istDate = new Date(date.getTime() + (5.5 * 60 * 60 * 1000)); // Convert to IST
+    const istDate = new Date(date.getTime() + 5.5 * 60 * 60 * 1000); // Convert to IST
     return istDate.toLocaleDateString("en-IN", {
       weekday: "short",
       year: "numeric",
@@ -112,7 +115,7 @@ const AppointmentListScreen = () => {
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
-    const istDate = new Date(date.getTime() + (5.5 * 60 * 60 * 1000)); // Convert to IST
+    const istDate = new Date(date.getTime() + 5.5 * 60 * 60 * 1000); // Convert to IST
     return istDate.toLocaleTimeString("en-IN", {
       hour: "2-digit",
       minute: "2-digit",
@@ -121,7 +124,7 @@ const AppointmentListScreen = () => {
   };
 
   const renderAppointment = ({ item }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.appointmentCard}
       onPress={() => {
         setSelectedAppointment(item);
@@ -131,7 +134,12 @@ const AppointmentListScreen = () => {
       <View style={styles.appointmentHeader}>
         <Ionicons name="person" size={20} color="#6A5ACD" />
         <Text style={styles.doctorName}>Dr {item.doctor_name}</Text>
-        <Ionicons style={{marginLeft:"auto"}} name="chevron-forward" size={20} color="#6A5ACD" />
+        <Ionicons
+          style={{ marginLeft: "auto" }}
+          name="chevron-forward"
+          size={20}
+          color="#6A5ACD"
+        />
       </View>
 
       <View style={styles.appointmentDetails}>
@@ -167,7 +175,9 @@ const AppointmentListScreen = () => {
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <ScrollView>
-            <Text style={styles.modalTitle}>Dr {selectedAppointment?.doctor_name}</Text>
+            <Text style={styles.modalTitle}>
+              Dr {selectedAppointment?.doctor_name}
+            </Text>
             <View style={styles.modalDetailRow}>
               <Ionicons name="calendar" size={20} color="#6A5ACD" />
               <Text style={styles.modalDetailText}>
@@ -182,11 +192,15 @@ const AppointmentListScreen = () => {
             </View>
             <View style={styles.modalDetailRow}>
               <Ionicons name="location" size={20} color="#6A5ACD" />
-              <Text style={styles.modalDetailText}>{selectedAppointment?.location}</Text>
+              <Text style={styles.modalDetailText}>
+                {selectedAppointment?.location}
+              </Text>
             </View>
             <View style={styles.modalDetailRow}>
               <Ionicons name="document-text" size={20} color="#6A5ACD" />
-              <Text style={styles.modalDetailText}>{selectedAppointment?.reason}</Text>
+              <Text style={styles.modalDetailText}>
+                {selectedAppointment?.reason}
+              </Text>
             </View>
           </ScrollView>
           <TouchableOpacity
@@ -230,11 +244,22 @@ const AppointmentListScreen = () => {
   return (
     <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#4B0082" />
+        </TouchableOpacity>
         <Text style={styles.title}>Appointments</Text>
       </View>
 
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color="#6A5ACD" style={styles.searchIcon} />
+        <Ionicons
+          name="search"
+          size={20}
+          color="#6A5ACD"
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.searchInput}
           placeholder="Search by doctor name"
@@ -245,18 +270,34 @@ const AppointmentListScreen = () => {
 
       <View style={styles.filterContainer}>
         <TouchableOpacity
-          style={[styles.filterButton, activeTab === "upcoming" && styles.activeFilterButton]}
+          style={[
+            styles.filterButton,
+            activeTab === "upcoming" && styles.activeFilterButton,
+          ]}
           onPress={() => setActiveTab("upcoming")}
         >
-          <Text style={[styles.filterButtonText, activeTab === "upcoming" && styles.activeFilterButtonText]}>
+          <Text
+            style={[
+              styles.filterButtonText,
+              activeTab === "upcoming" && styles.activeFilterButtonText,
+            ]}
+          >
             Upcoming
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.filterButton, activeTab === "past" && styles.activeFilterButton]}
+          style={[
+            styles.filterButton,
+            activeTab === "past" && styles.activeFilterButton,
+          ]}
           onPress={() => setActiveTab("past")}
         >
-          <Text style={[styles.filterButtonText, activeTab === "past" && styles.activeFilterButtonText]}>
+          <Text
+            style={[
+              styles.filterButtonText,
+              activeTab === "past" && styles.activeFilterButtonText,
+            ]}
+          >
             Past
           </Text>
         </TouchableOpacity>
@@ -264,10 +305,10 @@ const AppointmentListScreen = () => {
           style={styles.sortButton}
           onPress={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
         >
-          <Ionicons 
-            name={sortOrder === "asc" ? "arrow-up" : "arrow-down"} 
-            size={20} 
-            color="#6A5ACD" 
+          <Ionicons
+            name={sortOrder === "asc" ? "arrow-up" : "arrow-down"}
+            size={20}
+            color="#6A5ACD"
           />
         </TouchableOpacity>
       </View>
@@ -301,18 +342,20 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop: hp("6%"),
-    paddingHorizontal: wp("5%"),
     paddingBottom: hp("2%"),
+    paddingLeft: wp("50%"),
+    position: "relative",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     color: "#4B0082",
+    transform: [{ translateX: "-45%" }],
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderRadius: 25,
     marginHorizontal: wp("5%"),
     marginBottom: hp("2%"),
@@ -486,6 +529,23 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "500",
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 10,
+    backgroundColor: "white",
+    borderRadius: 50,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3,
   },
 });
 

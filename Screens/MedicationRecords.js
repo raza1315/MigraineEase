@@ -17,7 +17,7 @@ import {
 } from "react-native-responsive-screen";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused , useNavigation} from "@react-navigation/native";
 
 const MedicationRecords = () => {
   const [activeTab, setActiveTab] = useState("active");
@@ -31,6 +31,7 @@ const MedicationRecords = () => {
   const [selectedMedication, setSelectedMedication] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const isFocused = useIsFocused();
+  const navigation = useNavigation();
 
   useEffect(() => {
     const getUserId = async () => {
@@ -237,6 +238,12 @@ const MedicationRecords = () => {
   return (
     <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#4B0082" />
+        </TouchableOpacity>
         <Text style={styles.title}>Medications</Text>
       </View>
 
@@ -329,13 +336,15 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingTop: hp("6%"),
-    paddingHorizontal: wp("5%"),
+    paddingLeft: wp("50%"),
     paddingBottom: hp("2%"),
+    position: "relative",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     color: "#4B0082",
+    transform: [{ translateX: "-40%" }],
   },
   searchContainer: {
     flexDirection: "row",
@@ -514,6 +523,23 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "500",
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 10,
+    backgroundColor: "white",
+    borderRadius: 50,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3,
   },
 });
 

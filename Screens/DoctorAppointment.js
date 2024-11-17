@@ -17,10 +17,16 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen";
-import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import {
+  Ionicons,
+  MaterialIcons,
+  FontAwesome5,
+  FontAwesome,
+} from "@expo/vector-icons";
+import { CalendarCheck2 } from "lucide-react-native";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -80,6 +86,7 @@ const DoctorAppointment = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [userId, setUserId] = useState(null);
   const isFocused = useIsFocused();
+  const navigation = useNavigation();
 
   useEffect(() => {
     setIsFormValid(doctorName.trim() !== "" && location.trim() !== "");
@@ -201,6 +208,21 @@ const DoctorAppointment = () => {
   return (
     <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#4B0082" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.remindersButton}
+          onPress={() => navigation.navigate("appointmentRecords")}
+        >
+          {/* <FontAwesome name="pencil-square-o" size={24} color="#6A5ACD" /> */}
+          <CalendarCheck2 size={24} color="#6A5ACD" />
+
+          <Text style={{ color: "#6A5ACD", fontWeight: "600" }}>Scheduled</Text>
+        </TouchableOpacity>
         <Image
           source={require("../assets/migrainebg.jpeg")}
           style={styles.bgimage1}
@@ -510,6 +532,44 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 400,
     borderBottomRightRadius: 280,
     backgroundColor: "rgba(0, 0, 0, 0.12)",
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 10,
+    backgroundColor: "white",
+    borderRadius: 50,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3,
+  },
+  remindersButton: {
+    position: "absolute",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+    bottom: 30,
+    right: 25,
+    zIndex: 10,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3,
   },
 });
 

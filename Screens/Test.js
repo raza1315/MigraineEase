@@ -1,319 +1,223 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
-  ActivityIndicator,
-  TextInput,
-  Modal,
   ScrollView,
+  Animated,
+  Easing,
+  Image,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from "react-native-responsive-screen";
-import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useIsFocused } from "@react-navigation/native";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import Svg, { Path } from "react-native-svg";
 
-const MedicationListScreen = () => {
-  const [activeTab, setActiveTab] = useState("active");
-  const [medications, setMedications] = useState([]);
-  const [filteredMedications, setFilteredMedications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState("desc");
-  const [selectedMedication, setSelectedMedication] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const isFocused = useIsFocused();
+const WaveCircle = ({ delay = 0, duration = 2000 }) => {
+  const animation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const getUserId = async () => {
-      try {
-        const storedUserId = await AsyncStorage.getItem("userId");
-        setUserId(storedUserId ? parseInt(storedUserId) : null);
-      } catch (err) {
-        console.error("Error getting userId:", err);
-      }
+    const animate = () => {
+      animation.setValue(0);
+      Animated.timing(animation, {
+        toValue: 1,
+        duration: duration,
+        easing: Easing.linear,
+        useNativeDriver: true,
+        delay: delay,
+      }).start(() => animate());
     };
-    getUserId();
+    animate();
   }, []);
 
-  useEffect(() => {
-    if (isFocused && userId) {
-      fetchMedications();
-    }
-  }, [isFocused, userId]);
+  const scale = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.5],
+  });
 
-  useEffect(() => {
-    filterAndSortMedications();
-  }, [medications, activeTab, searchQuery, sortOrder]);
-
-  const fetchMedications = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_SERVER_URL}/notification/getMedicationsRecords/${userId}`
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch medications");
-      }
-
-      const data = await response.json();
-      setMedications(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterAndSortMedications = () => {
-    const now = new Date();
-    let filtered = medications.filter((med) => {
-      const endDate = new Date(med.end_date);
-      return activeTab === "active" ? endDate >= now : endDate < now;
-    });
-
-    if (searchQuery) {
-      filtered = filtered.filter((med) =>
-        med.medicine_name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    filtered.sort((a, b) => {
-      const dateA = new Date(a.created_at);
-      const dateB = new Date(b.created_at);
-      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-    });
-
-    setFilteredMedications(filtered);
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-IN", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const renderMedication = ({ item }) => (
-    <TouchableOpacity
-      style={styles.medicationCard}
-      onPress={() => {
-        setSelectedMedication(item);
-        setModalVisible(true);
-      }}
-    >
-      <View style={styles.medicationHeader}>
-        <Ionicons name="medical" size={20} color="#6A5ACD" />
-        <Text style={styles.medicineName}>{item.medicine_name}</Text>
-        <Ionicons
-          style={{ marginLeft: "auto" }}
-          name="chevron-forward"
-          size={20}
-          color="#6A5ACD"
-        />
-      </View>
-
-      <View style={styles.medicationDetails}>
-        <View style={styles.detailRow}>
-          <Ionicons name="flask" size={16} color="#6A5ACD" />
-          <Text style={styles.detailText}>{item.dosage} mg</Text>
-        </View>
-
-        <View style={styles.detailRow}>
-          <Ionicons name="calendar" size={16} color="#6A5ACD" />
-          <Text style={styles.detailText}>
-            {formatDate(item.start_date)} - {formatDate(item.end_date)}
-          </Text>
-        </View>
-
-        {item.reminder_time && (
-          <View style={styles.detailRow}>
-            <Ionicons name="time" size={16} color="#6A5ACD" />
-            <Text style={styles.detailText}>
-              Notification at: {item.reminder_time}
-            </Text>
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderModal = () => (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <ScrollView>
-            <Text style={styles.modalTitle}>
-              {selectedMedication?.medicine_name}
-            </Text>
-            <View style={styles.modalDetailRow}>
-              <Ionicons name="flask" size={20} color="#6A5ACD" />
-              <Text style={styles.modalDetailText}>
-                Dosage: {selectedMedication?.dosage} mg
-              </Text>
-            </View>
-            <View style={styles.modalDetailRow}>
-              <Ionicons name="calendar" size={20} color="#6A5ACD" />
-              <Text style={styles.modalDetailText}>
-                Start Date: {formatDate(selectedMedication?.start_date)}
-              </Text>
-            </View>
-            <View style={styles.modalDetailRow}>
-              <Ionicons name="calendar" size={20} color="#6A5ACD" />
-              <Text style={styles.modalDetailText}>
-                End Date: {formatDate(selectedMedication?.end_date)}
-              </Text>
-            </View>
-            {selectedMedication?.notes && (
-              <View style={styles.modalDetailRow}>
-                <Ionicons name="document-text" size={20} color="#6A5ACD" />
-                <Text style={styles.modalDetailText}>
-                  {selectedMedication?.notes}
-                </Text>
-              </View>
-            )}
-          </ScrollView>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setModalVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-
-  if (loading) {
-    return (
-      <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#6A5ACD" />
-          <Text style={styles.loadingText}>Loading medications...</Text>
-        </View>
-      </LinearGradient>
-    );
-  }
-
-  if (error) {
-    return (
-      <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.container}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Error: {error}</Text>
-          <TouchableOpacity
-            style={styles.retryButton}
-            onPress={fetchMedications}
-          >
-            <Text style={styles.retryButtonText}>Retry</Text>
-          </TouchableOpacity>
-        </View>
-      </LinearGradient>
-    );
-  }
+  const opacity = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.8, 0],
+  });
 
   return (
-    <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Medications</Text>
-      </View>
+    <Animated.View
+      style={[
+        styles.waveCircle,
+        {
+          transform: [{ scale }],
+          opacity,
+        },
+      ]}
+    />
+  );
+};
 
-      <View style={styles.searchContainer}>
-        <Ionicons
-          name="search"
-          size={20}
-          color="#6A5ACD"
-          style={styles.searchIcon}
-        />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search by medicine name"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
+const WavySVG = () => (
+  <Svg height="100" width="100%" viewBox="0 0 1440 320" preserveAspectRatio="none">
+    <Path
+      fill="#E6E6FA"
+      fillOpacity="0.5"
+      d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,149.3C672,149,768,203,864,224C960,245,1056,235,1152,208C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+    />
+  </Svg>
+);
 
-      <View style={styles.filterContainer}>
-        <TouchableOpacity
-          style={[
-            styles.filterButton,
-            activeTab === "active" && styles.activeFilterButton,
-          ]}
-          onPress={() => setActiveTab("active")}
-        >
-          <Text
-            style={[
-              styles.filterButtonText,
-              activeTab === "active" && styles.activeFilterButtonText,
-            ]}
-          >
-            Active
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.filterButton,
-            activeTab === "completed" && styles.activeFilterButton,
-          ]}
-          onPress={() => setActiveTab("completed")}
-        >
-          <Text
-            style={[
-              styles.filterButtonText,
-              activeTab === "completed" && styles.activeFilterButtonText,
-            ]}
-          >
-            Completed
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.sortButton}
-          onPress={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-        >
-          <Ionicons
-            name={sortOrder === "asc" ? "arrow-up" : "arrow-down"}
-            size={20}
-            color="#6A5ACD"
-          />
-        </TouchableOpacity>
-      </View>
+const dummyData = {
+  username: "Sarah",
+  attackFreeTime: "8 hours",
+  nextDose: {
+    medicine: "Sumatriptan",
+    time: "Tomorrow, 12:30",
+  },
+  pressureForecast: [
+    { day: "Sat", status: "unknown" },
+    { day: "Sun", status: "unknown" },
+    { day: "Mon", status: "good" },
+    { day: "Tue", status: "good" },
+    { day: "Wed", status: "good" },
+    { day: "Thu", status: "good" },
+    { day: "Fri", status: "good" },
+  ],
+};
 
-      <FlatList
-        data={filteredMedications}
-        renderItem={renderMedication}
-        keyExtractor={(item, index) =>
-          `${item.user_id}-${item.created_at}-${index}`
-        }
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
-              No {activeTab} medications found
-            </Text>
+const Home = () => {
+  return (
+    <SafeAreaView style={styles.container}>
+      <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.gradient}>
+        <ScrollView style={styles.scrollView}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.userInfo}>
+              <Image
+                source={{ uri: "https://picsum.photos/200" }}
+                style={styles.profilePicture}
+              />
+              <Text style={styles.username}>{dummyData.username}</Text>
+            </View>
           </View>
-        }
-        refreshing={loading}
-        onRefresh={fetchMedications}
-      />
-      {renderModal()}
-    </LinearGradient>
+
+          {/* Greeting Section with Headache Image */}
+          <View style={styles.greetingSection}>
+            <View style={styles.greetingContent}>
+              <Text style={styles.attackFreeText}>
+                You have been attack free for
+              </Text>
+              <Text style={styles.attackFreeTime}>
+                {dummyData.attackFreeTime}
+              </Text>
+            </View>
+            <Image
+              source={{ uri: "https://picsum.photos/150" }}
+              style={styles.headacheImage}
+            />
+          </View>
+
+          {/* Wavy SVG */}
+          <WavySVG />
+
+          {/* Pressure Forecast */}
+          <View style={styles.forecastContainer}>
+            <Text style={styles.sectionTitle}>Pressure Variation Forecast</Text>
+            <View style={styles.forecastCard}>
+              <View style={styles.forecastDays}>
+                {dummyData.pressureForecast.map((day, index) => (
+                  <View key={index} style={styles.dayContainer}>
+                    <Text style={styles.dayText}>{day.day}</Text>
+                    <View style={styles.dayIndicator}>
+                      {day.status === "unknown" ? (
+                        <Text style={styles.questionMark}>?</Text>
+                      ) : (
+                        <FontAwesome5 name="crown" size={16} color="#6A5ACD" />
+                      )}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+
+          {/* Treatment Manager */}
+          <View style={styles.treatmentContainer}>
+            <Text style={styles.sectionTitle}>Treatment Manager</Text>
+            <View style={styles.treatmentCard}>
+              <View>
+                <Text style={styles.treatmentLabel}>NEXT DOSE</Text>
+                <Text style={styles.medicineText}>
+                  {dummyData.nextDose.medicine}
+                </Text>
+                <Text style={styles.timeText}>{dummyData.nextDose.time}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#6A5ACD" />
+            </View>
+          </View>
+
+          {/* Doctor Appointment */}
+          <TouchableOpacity style={styles.appointmentCard}>
+            <View>
+              <Text style={styles.sectionTitle}>Doctor Appointment</Text>
+              <Text style={styles.appointmentText}>
+                Schedule your next check-up
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={24} color="#6A5ACD" />
+          </TouchableOpacity>
+
+          {/* Join Community Section */}
+          <View style={styles.communityContainer}>
+            <Text style={styles.sectionTitle}>Join Our Community</Text>
+            <View style={styles.communityContent}>
+              <Text style={styles.communityText}>
+                Connect with others, share experiences, and find support in our
+                MigraineEase community.
+              </Text>
+              <View style={styles.communityLogos}>
+                <Image
+                  source={{ uri: "https://picsum.photos/60" }}
+                  style={styles.communityLogo}
+                />
+                <Image
+                  source={{ uri: "https://picsum.photos/61" }}
+                  style={styles.communityLogo}
+                />
+                <Image
+                  source={{ uri: "https://picsum.photos/62" }}
+                  style={styles.communityLogo}
+                />
+              </View>
+              <TouchableOpacity style={styles.joinButton}>
+                <Text style={styles.joinButtonText}>Join Now</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+
+        {/* Bottom Navigation */}
+        <View style={styles.bottomNav}>
+          <TouchableOpacity style={styles.navItem}>
+            <FontAwesome5 name="home" size={24} color="#4B0082" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <FontAwesome5 name="chart-bar" size={24} color="#4B0082" />
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.navItem, styles.centerButton]}>
+            <WaveCircle delay={0} />
+            <WaveCircle delay={500} />
+            <WaveCircle delay={1000} />
+            <View style={styles.centerButtonInner}>
+              <FontAwesome5 name="bolt" size={24} color="#FFFFFF" />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <FontAwesome5 name="book-medical" size={24} color="#4B0082" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem}>
+            <FontAwesome5 name="user" size={24} color="#4B0082" />
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -321,194 +225,247 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  gradient: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
   header: {
-    paddingTop: hp("6%"),
-    paddingHorizontal: wp("5%"),
-    paddingBottom: hp("2%"),
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#4B0082",
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 25,
-    marginHorizontal: wp("5%"),
-    marginBottom: hp("2%"),
-    paddingHorizontal: 15,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-  },
-  searchIcon: {
-    marginRight: 10,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 12,
-    fontSize: 16,
-  },
-  filterContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: wp("5%"),
-    marginBottom: hp("2%"),
-  },
-  filterButton: {
-    flex: 1,
-    paddingVertical: hp("1.5%"),
-    alignItems: "center",
-    borderRadius: 20,
-    backgroundColor: "#E6E6FA",
-    marginHorizontal: 5,
-  },
-  activeFilterButton: {
-    backgroundColor: "#6A5ACD",
-  },
-  filterButtonText: {
-    fontSize: 16,
-    color: "#4B0082",
-    fontWeight: "500",
-  },
-  activeFilterButtonText: {
-    color: "#FFFFFF",
-  },
-  sortButton: {
-    padding: 10,
-    borderRadius: 20,
-    backgroundColor: "#E6E6FA",
-  },
-  listContainer: {
-    padding: wp("5%"),
-  },
-  medicationCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 15,
-    padding: 20,
-    marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  medicationHeader: {
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
-    gap: 10,
-    marginBottom: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
   },
-  medicineName: {
+  userInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  profilePicture: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  username: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#4B0082",
+  },
+  greetingSection: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+  },
+  greetingContent: {
+    flex: 1,
+  },
+  attackFreeText: {
+    fontSize: 16,
+    color: "#6A5ACD",
+  },
+  attackFreeTime: {
+    fontSize: 36,
+    fontWeight: "bold",
+    color: "#4B0082",
+    marginTop: 10,
+  },
+  headacheImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+  },
+  sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#4B0082",
+    marginBottom: 10,
   },
-  medicationDetails: {
-    gap: 10,
-  },
-  detailRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  detailText: {
-    fontSize: 16,
-    color: "#333",
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 18,
-    color: "#666",
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  forecastContainer: {
     padding: 20,
   },
-  errorText: {
+  forecastCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 15,
+    padding: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  forecastDays: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  dayContainer: {
+    alignItems: "center",
+  },
+  dayText: {
+    color: "#4B0082",
+    marginBottom: 8,
+  },
+  dayIndicator: {
+    width: 32,
+    height: 32,
+    backgroundColor: "#E6E6FA",
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  questionMark: {
+    color: "#6A5ACD",
     fontSize: 18,
-    color: "#FF0000",
+    fontWeight: "bold",
+  },
+  treatmentContainer: {
+    padding: 20,
+  },
+  treatmentCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 15,
+    padding: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  treatmentLabel: {
+    color: "#6A5ACD",
+    marginBottom: 5,
+  },
+  medicineText: {
+    color: "#4B0082",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  timeText: {
+    color: "#6A5ACD",
+  },
+  appointmentCard: {
+    backgroundColor: "#FFFFFF",
+    margin: 20,
+    borderRadius: 15,
+    padding: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  appointmentText: {
+    color: "#6A5ACD",
+    marginTop: 5,
+  },
+  communityContainer: {
+    padding: 20,
+  },
+  communityContent: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 15,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  communityText: {
+    fontSize: 16,
+    color: "#4B0082",
     textAlign: "center",
     marginBottom: 20,
   },
-  retryButton: {
+  communityLogos: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+    marginBottom: 20,
+  },
+  communityLogo: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  joinButton: {
     backgroundColor: "#6A5ACD",
-    paddingHorizontal: 25,
-    paddingVertical: 12,
+    paddingHorizontal: 30,
+    paddingVertical: 10,
     borderRadius: 25,
   },
-  retryButtonText: {
+  joinButtonText: {
     color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "500",
-  },
-  emptyContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: hp("10%"),
-  },
-  emptyText: {
-    fontSize: 18,
-    color: "#666",
-    textAlign: "center",
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 20,
-    width: wp("90%"),
-    maxHeight: hp("80%"),
-  },
-  modalTitle: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: "bold",
-    color: "#4B0082",
-    marginBottom: 20,
   },
-  modalDetailRow: {
+  bottomNav: {
     flexDirection: "row",
+    justifyContent: "space-around",
     alignItems: "center",
-    marginBottom: 15,
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 10,
+    paddingBottom: 25,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  modalDetailText: {
-    fontSize: 18,
-    color: "#333",
-    marginLeft: 10,
+  navItem: {
+    padding: 10,
   },
-  closeButton: {
+  centerButton: {
+    marginTop: -30,
+    width: 70,
+    height: 70,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  centerButtonInner: {
+    width: 60,
+    height: 60,
     backgroundColor: "#6A5ACD",
-    padding: 15,
-    borderRadius: 10,
+    borderRadius: 30,
     alignItems: "center",
-    marginTop: 20,
+    justifyContent: "center",
+    position: "absolute",
   },
-  closeButtonText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "500",
+  waveCircle: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: "#6A5ACD",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
-export default MedicationListScreen;
+export default Home;
