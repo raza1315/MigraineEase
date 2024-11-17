@@ -1,471 +1,69 @@
-import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Animated,
-  Easing,
-  Image,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
-import Svg, { Path } from "react-native-svg";
+import React from 'react'
+import { View, Text, Image, ScrollView, TouchableOpacity, Switch } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
+import { LinearGradient } from 'expo-linear-gradient'
 
-const WaveCircle = ({ delay = 0, duration = 2000 }) => {
-  const animation = useRef(new Animated.Value(0)).current;
+export default function Settings() {
+  const [notificationsEnabled, setNotificationsEnabled] = React.useState(true)
+  const [darkModeEnabled, setDarkModeEnabled] = React.useState(false)
 
-  useEffect(() => {
-    const animate = () => {
-      animation.setValue(0);
-      Animated.timing(animation, {
-        toValue: 1,
-        duration: duration,
-        easing: Easing.linear,
-        useNativeDriver: true,
-        delay: delay,
-      }).start(() => animate());
-    };
-    animate();
-  }, []);
-
-  const scale = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 1.5],
-  });
-
-  const opacity = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.8, 0],
-  });
+  const user = {
+    name: 'Sarah Johnson',
+    email: 'sarah.johnson@example.com',
+    image: 'https://picsum.photos/200',
+  }
 
   return (
-    <Animated.View
-      style={[
-        styles.waveCircle,
-        {
-          transform: [{ scale }],
-          opacity,
-        },
-      ]}
-    />
-  );
-};
-
-const WavySVG = () => (
-  <Svg height="100" width="100%" viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <Path
-      fill="#E6E6FA"
-      fillOpacity="0.5"
-      d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,149.3C672,149,768,203,864,224C960,245,1056,235,1152,208C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-    />
-  </Svg>
-);
-
-const dummyData = {
-  username: "Sarah",
-  attackFreeTime: "8 hours",
-  nextDose: {
-    medicine: "Sumatriptan",
-    time: "Tomorrow, 12:30",
-  },
-  pressureForecast: [
-    { day: "Sat", status: "unknown" },
-    { day: "Sun", status: "unknown" },
-    { day: "Mon", status: "good" },
-    { day: "Tue", status: "good" },
-    { day: "Wed", status: "good" },
-    { day: "Thu", status: "good" },
-    { day: "Fri", status: "good" },
-  ],
-};
-
-const Home = () => {
-  return (
-    <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.gradient}>
-        <ScrollView style={styles.scrollView}>
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.userInfo}>
-              <Image
-                source={{ uri: "https://picsum.photos/200" }}
-                style={styles.profilePicture}
-              />
-              <Text style={styles.username}>{dummyData.username}</Text>
-            </View>
-          </View>
-
-          {/* Greeting Section with Headache Image */}
-          <View style={styles.greetingSection}>
-            <View style={styles.greetingContent}>
-              <Text style={styles.attackFreeText}>
-                You have been attack free for
-              </Text>
-              <Text style={styles.attackFreeTime}>
-                {dummyData.attackFreeTime}
-              </Text>
-            </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <LinearGradient colors={['#F0F8FF', '#E6E6FA']} style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }}>
+          <View style={{ backgroundColor: 'white', padding: 24, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
             <Image
-              source={{ uri: "https://picsum.photos/150" }}
-              style={styles.headacheImage}
+              source={{ uri: user.image }}
+              style={{ width: 96, height: 96, borderRadius: 48, marginBottom: 16 }}
             />
+            <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#4B0082' }}>{user.name}</Text>
+            <Text style={{ fontSize: 14, color: '#6A5ACD' }}>{user.email}</Text>
           </View>
 
-          {/* Wavy SVG */}
-          <WavySVG />
-
-          {/* Pressure Forecast */}
-          <View style={styles.forecastContainer}>
-            <Text style={styles.sectionTitle}>Pressure Variation Forecast</Text>
-            <View style={styles.forecastCard}>
-              <View style={styles.forecastDays}>
-                {dummyData.pressureForecast.map((day, index) => (
-                  <View key={index} style={styles.dayContainer}>
-                    <Text style={styles.dayText}>{day.day}</Text>
-                    <View style={styles.dayIndicator}>
-                      {day.status === "unknown" ? (
-                        <Text style={styles.questionMark}>?</Text>
-                      ) : (
-                        <FontAwesome5 name="crown" size={16} color="#6A5ACD" />
-                      )}
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </View>
+          <View style={{ marginTop: 24 }}>
+            <Text style={{ paddingHorizontal: 24, marginBottom: 8, fontSize: 14, fontWeight: '600', color: '#6A5ACD', textTransform: 'uppercase' }}>
+              Account Settings
+            </Text>
+            <TouchableOpacity style={{ backgroundColor: 'white', paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
+              <Text style={{ color: '#4B0082' }}>Edit Profile</Text>
+              <Ionicons name="chevron-forward" size={20} color="#6A5ACD" />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ backgroundColor: 'white', paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
+              <Text style={{ color: '#4B0082' }}>Change Password</Text>
+              <Ionicons name="chevron-forward" size={20} color="#6A5ACD" />
+            </TouchableOpacity>
           </View>
 
-          {/* Treatment Manager */}
-          <View style={styles.treatmentContainer}>
-            <Text style={styles.sectionTitle}>Treatment Manager</Text>
-            <View style={styles.treatmentCard}>
-              <View>
-                <Text style={styles.treatmentLabel}>NEXT DOSE</Text>
-                <Text style={styles.medicineText}>
-                  {dummyData.nextDose.medicine}
-                </Text>
-                <Text style={styles.timeText}>{dummyData.nextDose.time}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={24} color="#6A5ACD" />
-            </View>
+          <View style={{ marginTop: 24 }}>
+            <Text style={{ paddingHorizontal: 24, marginBottom: 8, fontSize: 14, fontWeight: '600', color: '#6A5ACD', textTransform: 'uppercase' }}>
+              Support
+            </Text>
+            <TouchableOpacity style={{ backgroundColor: 'white', paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
+              <Text style={{ color: '#4B0082' }}>Help Center</Text>
+              <Ionicons name="chevron-forward" size={20} color="#6A5ACD" />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ backgroundColor: 'white', paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
+              <Text style={{ color: '#4B0082' }}>Privacy Policy</Text>
+              <Ionicons name="chevron-forward" size={20} color="#6A5ACD" />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ backgroundColor: 'white', paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ color: '#4B0082' }}>Terms of Service</Text>
+              <Ionicons name="chevron-forward" size={20} color="#6A5ACD" />
+            </TouchableOpacity>
           </View>
 
-          {/* Doctor Appointment */}
-          <TouchableOpacity style={styles.appointmentCard}>
-            <View>
-              <Text style={styles.sectionTitle}>Doctor Appointment</Text>
-              <Text style={styles.appointmentText}>
-                Schedule your next check-up
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={24} color="#6A5ACD" />
+          <TouchableOpacity style={{ marginTop: 32, marginBottom: 32, marginHorizontal: 24, backgroundColor: '#6A5ACD', paddingVertical: 12, borderRadius: 8 }}>
+            <Text style={{ color: 'white', textAlign: 'center', fontWeight: '600' }}>Log Out</Text>
           </TouchableOpacity>
-
-          {/* Join Community Section */}
-          <View style={styles.communityContainer}>
-            <Text style={styles.sectionTitle}>Join Our Community</Text>
-            <View style={styles.communityContent}>
-              <Text style={styles.communityText}>
-                Connect with others, share experiences, and find support in our
-                MigraineEase community.
-              </Text>
-              <View style={styles.communityLogos}>
-                <Image
-                  source={{ uri: "https://picsum.photos/60" }}
-                  style={styles.communityLogo}
-                />
-                <Image
-                  source={{ uri: "https://picsum.photos/61" }}
-                  style={styles.communityLogo}
-                />
-                <Image
-                  source={{ uri: "https://picsum.photos/62" }}
-                  style={styles.communityLogo}
-                />
-              </View>
-              <TouchableOpacity style={styles.joinButton}>
-                <Text style={styles.joinButtonText}>Join Now</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
         </ScrollView>
-
-        {/* Bottom Navigation */}
-        <View style={styles.bottomNav}>
-          <TouchableOpacity style={styles.navItem}>
-            <FontAwesome5 name="home" size={24} color="#4B0082" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <FontAwesome5 name="chart-bar" size={24} color="#4B0082" />
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.navItem, styles.centerButton]}>
-            <WaveCircle delay={0} />
-            <WaveCircle delay={500} />
-            <WaveCircle delay={1000} />
-            <View style={styles.centerButtonInner}>
-              <FontAwesome5 name="bolt" size={24} color="#FFFFFF" />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <FontAwesome5 name="book-medical" size={24} color="#4B0082" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <FontAwesome5 name="user" size={24} color="#4B0082" />
-          </TouchableOpacity>
-        </View>
       </LinearGradient>
     </SafeAreaView>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  gradient: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-  userInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  profilePicture: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
-  },
-  username: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#4B0082",
-  },
-  greetingSection: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-  },
-  greetingContent: {
-    flex: 1,
-  },
-  attackFreeText: {
-    fontSize: 16,
-    color: "#6A5ACD",
-  },
-  attackFreeTime: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: "#4B0082",
-    marginTop: 10,
-  },
-  headacheImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#4B0082",
-    marginBottom: 10,
-  },
-  forecastContainer: {
-    padding: 20,
-  },
-  forecastCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 15,
-    padding: 15,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  forecastDays: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  dayContainer: {
-    alignItems: "center",
-  },
-  dayText: {
-    color: "#4B0082",
-    marginBottom: 8,
-  },
-  dayIndicator: {
-    width: 32,
-    height: 32,
-    backgroundColor: "#E6E6FA",
-    borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  questionMark: {
-    color: "#6A5ACD",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  treatmentContainer: {
-    padding: 20,
-  },
-  treatmentCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 15,
-    padding: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  treatmentLabel: {
-    color: "#6A5ACD",
-    marginBottom: 5,
-  },
-  medicineText: {
-    color: "#4B0082",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  timeText: {
-    color: "#6A5ACD",
-  },
-  appointmentCard: {
-    backgroundColor: "#FFFFFF",
-    margin: 20,
-    borderRadius: 15,
-    padding: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  appointmentText: {
-    color: "#6A5ACD",
-    marginTop: 5,
-  },
-  communityContainer: {
-    padding: 20,
-  },
-  communityContent: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 15,
-    padding: 20,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  communityText: {
-    fontSize: 16,
-    color: "#4B0082",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  communityLogos: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-    marginBottom: 20,
-  },
-  communityLogo: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-  },
-  joinButton: {
-    backgroundColor: "#6A5ACD",
-    paddingHorizontal: 30,
-    paddingVertical: 10,
-    borderRadius: 25,
-  },
-  joinButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    paddingVertical: 10,
-    paddingBottom: 25,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  navItem: {
-    padding: 10,
-  },
-  centerButton: {
-    marginTop: -30,
-    width: 70,
-    height: 70,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  centerButtonInner: {
-    width: 60,
-    height: 60,
-    backgroundColor: "#6A5ACD",
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "absolute",
-  },
-  waveCircle: {
-    position: "absolute",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    borderWidth: 2,
-    borderColor: "#6A5ACD",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
-
-export default Home;
+  )
+}

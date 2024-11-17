@@ -19,6 +19,7 @@ import DoctorAppointment from "../Screens/DoctorAppointment";
 import AppointmentRecords from "../Screens/AppointmentRecords";
 import MedicineReminder from "../Screens/MedicineReminder";
 import MedicationRecords from "../Screens/MedicationRecords";
+import Settings from "../Screens/Settings";
 
 const WaveCircle = ({ delay = 0, duration = 2000 }) => {
   const animation = useRef(new Animated.Value(0)).current;
@@ -194,7 +195,7 @@ const TabNavigation = () => {
             );
           },
         }}
-        name="test2"
+        name="migraine"
         component={Test}
       />
       <Tab.Screen
@@ -221,7 +222,7 @@ const TabNavigation = () => {
             );
           },
         }}
-        name="test3"
+        name="chats"
         component={Test}
       />
       <Tab.Screen
@@ -244,8 +245,8 @@ const TabNavigation = () => {
             );
           },
         }}
-        name="test4"
-        component={Test}
+        name="settings"
+        component={Settings}
       />
     </Tab.Navigator>
   );
