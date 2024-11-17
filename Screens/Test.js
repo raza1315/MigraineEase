@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -54,6 +54,14 @@ const initialChats = [
   },
 ];
 
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
+
 export default function ChatScreen() {
   const [chats, setChats] = useState(initialChats);
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,6 +79,18 @@ export default function ChatScreen() {
       setChats(initialChats);
     }
   }, []);
+
+  const debouncedSearch = useCallback(
+    debounce((text) => {
+      console.log("Search query:", text);
+      handleSearch(text);
+    }, 1500),
+    []
+  );
+
+  useEffect(() => {
+    debouncedSearch(searchQuery);
+  }, [searchQuery, debouncedSearch]);
 
   const renderChat = ({ item }) => (
     <TouchableOpacity style={styles.chatItem}>
@@ -94,12 +114,6 @@ export default function ChatScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.chatsHeader}>
-        <Text style={styles.chatsTitle}>Chats</Text>
-        <TouchableOpacity>
-          <Ionicons name="ellipsis-horizontal" size={24} color="#4B0082" />
-        </TouchableOpacity>
-      </View>
       <View style={styles.header}>
         <View style={styles.searchContainer}>
           <Ionicons
@@ -113,9 +127,16 @@ export default function ChatScreen() {
             placeholder="Search"
             placeholderTextColor="#6A5ACD"
             value={searchQuery}
-            onChangeText={handleSearch}
+            onChangeText={setSearchQuery}
           />
         </View>
+      </View>
+
+      <View style={styles.chatsHeader}>
+        <Text style={styles.chatsTitle}>Chats</Text>
+        <TouchableOpacity>
+          <Ionicons name="ellipsis-horizontal" size={24} color="#4B0082" />
+        </TouchableOpacity>
       </View>
 
       <FlatList
