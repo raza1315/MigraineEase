@@ -1,24 +1,57 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   Image,
   ScrollView,
   TouchableOpacity,
-  Switch,
+  Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Settings() {
   const navigation = useNavigation();
-  const user = {
-    name: "Sarah Johnson",
-    email: "sarah.johnson@example.com",
-    image: "https://picsum.photos/200",
+  const isFocused = useIsFocused();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [image, setImage] = useState(null);
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
+
+  const fetchUserData = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/auth/profile/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const result = await res.json();
+      if (res.status === 200) {
+        setName(result.username);
+        setEmail(result.email);
+        setImage(result.image_url);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchUserData();
+    }
+  }, [isFocused]);
+
+  const handleImagePress = () => {
+    setIsImageModalVisible(true);
   };
 
   return (
@@ -34,21 +67,26 @@ export default function Settings() {
               borderBottomColor: "#E5E7EB",
             }}
           >
-            <Image
-              source={{ uri: user.image }}
-              style={{
-                width: 96,
-                height: 96,
-                borderRadius: 48,
-                marginBottom: 16,
-              }}
-            />
+            <TouchableOpacity onPress={handleImagePress}>
+              <Image
+                source={{ uri: image }}
+                style={{
+                  width: 96,
+                  height: 96,
+                  borderRadius: 48,
+                  marginBottom: 16,
+                  borderWidth: 2,
+                  borderColor: "#4",
+                  elevation: 3,
+                }}
+              />
+            </TouchableOpacity>
             <Text
               style={{ fontSize: 24, fontWeight: "bold", color: "#4B0082" }}
             >
-              {user.name}
+              {name}
             </Text>
-            <Text style={{ fontSize: 14, color: "#6A5ACD" }}>{user.email}</Text>
+            <Text style={{ fontSize: 14, color: "#6A5ACD" }}>{email}</Text>
           </View>
 
           <View style={{ marginTop: 24 }}>
@@ -164,7 +202,6 @@ export default function Settings() {
               borderRadius: 8,
             }}
             onPress={async () => {
-                console.log("Logout button clicked");
               await AsyncStorage.removeItem("userId");
               navigation.navigate("signIn");
             }}
@@ -176,6 +213,33 @@ export default function Settings() {
             </Text>
           </TouchableOpacity>
         </ScrollView>
+
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={isImageModalVisible}
+          onRequestClose={() => setIsImageModalVisible(false)}
+        >
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0, 0, 0, 0.7)",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            activeOpacity={1}
+            onPress={() => setIsImageModalVisible(false)}
+          >
+            <Image
+              source={{ uri: image }}
+              style={{
+                width: "90%",
+                height: "90%",
+                resizeMode: "contain",
+              }}
+            />
+          </TouchableOpacity>
+        </Modal>
       </LinearGradient>
     </SafeAreaView>
   );

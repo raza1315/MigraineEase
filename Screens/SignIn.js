@@ -51,7 +51,7 @@ export default function SignIn() {
         const userid = await AsyncStorage.getItem("userId");
         console.log(userid);
         if (userid) {
-          navigation.navigate("home");
+          navigation.navigate("MainTabs");
         }
       }, 1500);
     }
@@ -109,7 +109,7 @@ export default function SignIn() {
       setEmail("");
       setPassword("");
       Alert.alert("Success", res.message);
-      navigation.navigate("home");
+      navigation.navigate("MainTabs");
     } else if (result.status === 401) {
       setIsLoading(false);
       Alert.alert("Invalid Credentials", res.error);

@@ -48,16 +48,20 @@ router.post("/signup", upload.single("image"), async (req, res) => {
     const imageUrl = req.file?.path;
     console.log(imageUrl);
 
-   const [user]= await trx("users").insert({
-      username,
-      email,
-      password,
-      image_url: imageUrl,
-      created_at: new Date(),
-      updated_at: new Date(),
-    }).returning("user_id");
+    const [user] = await trx("users")
+      .insert({
+        username,
+        email,
+        password,
+        image_url: imageUrl,
+        created_at: new Date(),
+        updated_at: new Date(),
+      })
+      .returning("user_id");
     trx.commit();
-    res.status(201).json({ message: "Signup successful", userId: user.user_id });
+    res
+      .status(201)
+      .json({ message: "Signup successful", userId: user.user_id });
   } catch (error) {
     console.log("Error in /signup", error);
     trx.rollback();
@@ -79,9 +83,26 @@ router.post("/signin", async (req, res) => {
     if (user.password !== password) {
       return res.status(401).json({ error: "Invalid password" });
     }
-    res.status(200).json({ message: "Sign In Successful", userId: user.user_id });
+    res
+      .status(200)
+      .json({ message: "Sign In Successful", userId: user.user_id });
   } catch (error) {
     console.log("Error in /signin", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// /auth/profile
+router.get("/profile/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await db("users").where({ user_id: userId }).first();
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.log("Error in /profile", error);
     res.status(500).json({ error: error.message });
   }
 });
