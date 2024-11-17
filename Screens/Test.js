@@ -1,69 +1,222 @@
-import React from 'react'
-import { View, Text, Image, ScrollView, TouchableOpacity, Switch } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Ionicons } from '@expo/vector-icons'
-import { LinearGradient } from 'expo-linear-gradient'
+import React, { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function Settings() {
-  const [notificationsEnabled, setNotificationsEnabled] = React.useState(true)
-  const [darkModeEnabled, setDarkModeEnabled] = React.useState(false)
+const initialChats = [
+  {
+    id: "1",
+    name: "Angel Curtis",
+    message: "Please help me find a good monitor for tracking migraines",
+    time: "02:11",
+    unread: 2,
+    image: "https://picsum.photos/id/1050/200",
+  },
+  {
+    id: "2",
+    name: "Zaire Dorwart",
+    message: "Checking in about your migraine diary",
+    time: "02:11",
+    unread: 0,
+    image: "https://picsum.photos/id/1055/200",
+  },
+  {
+    id: "3",
+    name: "Support Group",
+    message: "Emma: Thanks for sharing your experience!",
+    time: "02:11",
+    unread: 2,
+    image: "https://picsum.photos/id/1060/200",
+  },
+  {
+    id: "4",
+    name: "Dr. Johnson",
+    message: "You're scheduled for next week",
+    time: "02:11",
+    unread: 0,
+    image: "https://picsum.photos/id/1065/200",
+  },
+  {
+    id: "5",
+    name: "Medication Reminder",
+    message: "Time to take your evening dose",
+    time: "02:11",
+    unread: 1,
+    image: "https://picsum.photos/id/1070/200",
+  },
+];
 
-  const user = {
-    name: 'Sarah Johnson',
-    email: 'sarah.johnson@example.com',
-    image: 'https://picsum.photos/200',
-  }
+export default function ChatScreen() {
+  const [chats, setChats] = useState(initialChats);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = useCallback((text) => {
+    setSearchQuery(text);
+    if (text) {
+      const filteredChats = initialChats.filter(
+        (chat) =>
+          chat.name.toLowerCase().includes(text.toLowerCase()) ||
+          chat.message.toLowerCase().includes(text.toLowerCase())
+      );
+      setChats(filteredChats);
+    } else {
+      setChats(initialChats);
+    }
+  }, []);
+
+  const renderChat = ({ item }) => (
+    <TouchableOpacity style={styles.chatItem}>
+      <Image source={{ uri: item.image }} style={styles.chatImage} />
+      <View style={styles.chatContent}>
+        <Text style={styles.chatName}>{item.name}</Text>
+        <Text style={styles.chatMessage} numberOfLines={1}>
+          {item.message}
+        </Text>
+      </View>
+      <View style={styles.chatMeta}>
+        <Text style={styles.chatTime}>{item.time}</Text>
+        {item.unread > 0 && (
+          <View style={styles.unreadBadge}>
+            <Text style={styles.unreadText}>{item.unread}</Text>
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <LinearGradient colors={['#F0F8FF', '#E6E6FA']} style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1 }}>
-          <View style={{ backgroundColor: 'white', padding: 24, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
-            <Image
-              source={{ uri: user.image }}
-              style={{ width: 96, height: 96, borderRadius: 48, marginBottom: 16 }}
-            />
-            <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#4B0082' }}>{user.name}</Text>
-            <Text style={{ fontSize: 14, color: '#6A5ACD' }}>{user.email}</Text>
-          </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.chatsHeader}>
+        <Text style={styles.chatsTitle}>Chats</Text>
+        <TouchableOpacity>
+          <Ionicons name="ellipsis-horizontal" size={24} color="#4B0082" />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.header}>
+        <View style={styles.searchContainer}>
+          <Ionicons
+            name="search"
+            size={20}
+            color="#6A5ACD"
+            style={styles.searchIcon}
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search"
+            placeholderTextColor="#6A5ACD"
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
+        </View>
+      </View>
 
-          <View style={{ marginTop: 24 }}>
-            <Text style={{ paddingHorizontal: 24, marginBottom: 8, fontSize: 14, fontWeight: '600', color: '#6A5ACD', textTransform: 'uppercase' }}>
-              Account Settings
-            </Text>
-            <TouchableOpacity style={{ backgroundColor: 'white', paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
-              <Text style={{ color: '#4B0082' }}>Edit Profile</Text>
-              <Ionicons name="chevron-forward" size={20} color="#6A5ACD" />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ backgroundColor: 'white', paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
-              <Text style={{ color: '#4B0082' }}>Change Password</Text>
-              <Ionicons name="chevron-forward" size={20} color="#6A5ACD" />
-            </TouchableOpacity>
-          </View>
-
-          <View style={{ marginTop: 24 }}>
-            <Text style={{ paddingHorizontal: 24, marginBottom: 8, fontSize: 14, fontWeight: '600', color: '#6A5ACD', textTransform: 'uppercase' }}>
-              Support
-            </Text>
-            <TouchableOpacity style={{ backgroundColor: 'white', paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
-              <Text style={{ color: '#4B0082' }}>Help Center</Text>
-              <Ionicons name="chevron-forward" size={20} color="#6A5ACD" />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ backgroundColor: 'white', paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' }}>
-              <Text style={{ color: '#4B0082' }}>Privacy Policy</Text>
-              <Ionicons name="chevron-forward" size={20} color="#6A5ACD" />
-            </TouchableOpacity>
-            <TouchableOpacity style={{ backgroundColor: 'white', paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={{ color: '#4B0082' }}>Terms of Service</Text>
-              <Ionicons name="chevron-forward" size={20} color="#6A5ACD" />
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity style={{ marginTop: 32, marginBottom: 32, marginHorizontal: 24, backgroundColor: '#6A5ACD', paddingVertical: 12, borderRadius: 8 }}>
-            <Text style={{ color: 'white', textAlign: 'center', fontWeight: '600' }}>Log Out</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </LinearGradient>
+      <FlatList
+        data={chats}
+        renderItem={renderChat}
+        keyExtractor={(item) => item.id}
+        style={styles.chatsList}
+      />
     </SafeAreaView>
-  )
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  header: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E6E6FA",
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F0F0FF",
+    borderRadius: 20,
+    paddingHorizontal: 12,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    color: "#4B0082",
+    fontSize: 16,
+  },
+  chatsHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E6E6FA",
+  },
+  chatsTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#4B0082",
+  },
+  chatsList: {
+    flex: 1,
+  },
+  chatItem: {
+    flexDirection: "row",
+    padding: 16,
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E6E6FA",
+  },
+  chatImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  chatContent: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  chatName: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#4B0082",
+    marginBottom: 4,
+  },
+  chatMessage: {
+    fontSize: 14,
+    color: "#6A5ACD",
+  },
+  chatMeta: {
+    alignItems: "flex-end",
+  },
+  chatTime: {
+    fontSize: 12,
+    color: "#6A5ACD",
+    marginBottom: 4,
+  },
+  unreadBadge: {
+    backgroundColor: "#6A5ACD",
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 6,
+  },
+  unreadText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+});
