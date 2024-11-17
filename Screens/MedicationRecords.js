@@ -19,7 +19,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 
-const MedicationListScreen = () => {
+const MedicationRecords = () => {
   const [activeTab, setActiveTab] = useState("active");
   const [medications, setMedications] = useState([]);
   const [filteredMedications, setFilteredMedications] = useState([]);
@@ -179,6 +179,12 @@ const MedicationListScreen = () => {
               <Ionicons name="calendar" size={20} color="#6A5ACD" />
               <Text style={styles.modalDetailText}>
                 End Date: {formatDate(selectedMedication?.end_date)}
+              </Text>
+            </View>
+            <View style={styles.modalDetailRow}>
+              <Ionicons name="time" size={20} color="#6A5ACD" />
+              <Text style={styles.modalDetailText}>
+                Notification at: {selectedMedication?.reminder_time}
               </Text>
             </View>
             {selectedMedication?.notes && (
@@ -511,4 +517,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MedicationListScreen;
+export default MedicationRecords;

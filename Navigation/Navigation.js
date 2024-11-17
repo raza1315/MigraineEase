@@ -10,6 +10,7 @@ import Home from "../Screens/Home";
 import DoctorAppointment from "../Screens/DoctorAppointment";
 import AppointmentRecords from "../Screens/AppointmentRecords";
 import MedicineReminder from "../Screens/MedicineReminder";
+import MedicationRecords from "../Screens/MedicationRecords";
 
 const Navigation = () => {
   const Stack = createNativeStackNavigator();
@@ -50,6 +51,11 @@ const Navigation = () => {
           <Stack.Screen
             name="medsReminder"
             component={MedicineReminder}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="medsRecords"
+            component={MedicationRecords}
             options={{ headerShown: false }}
           />
           <Stack.Screen
