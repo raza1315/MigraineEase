@@ -230,29 +230,6 @@ const Home = () => {
           </View>
         </ScrollView>
 
-        {/* Bottom Navigation */}
-        <View style={styles.bottomNav}>
-          <TouchableOpacity style={styles.navItem}>
-            <FontAwesome5 name="home" size={24} color="#4B0082" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <FontAwesome5 name="chart-bar" size={24} color="#4B0082" />
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.navItem, styles.centerButton]}>
-            <WaveCircle delay={0} />
-            <WaveCircle delay={500} />
-            <WaveCircle delay={1000} />
-            <View style={styles.centerButtonInner}>
-              <FontAwesome5 name="bolt" size={24} color="#FFFFFF" />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <FontAwesome5 name="book-medical" size={24} color="#4B0082" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem}>
-            <FontAwesome5 name="user" size={24} color="#4B0082" />
-          </TouchableOpacity>
-        </View>
       </LinearGradient>
     </SafeAreaView>
   );
