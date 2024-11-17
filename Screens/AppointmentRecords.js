@@ -129,8 +129,9 @@ const AppointmentListScreen = () => {
       }}
     >
       <View style={styles.appointmentHeader}>
-        <Text style={styles.doctorName}>{item.doctor_name}</Text>
-        <Ionicons name="chevron-forward" size={20} color="#6A5ACD" />
+        <Ionicons name="person" size={20} color="#6A5ACD" />
+        <Text style={styles.doctorName}>Dr {item.doctor_name}</Text>
+        <Ionicons style={{marginLeft:"auto"}} name="chevron-forward" size={20} color="#6A5ACD" />
       </View>
 
       <View style={styles.appointmentDetails}>
@@ -166,7 +167,7 @@ const AppointmentListScreen = () => {
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <ScrollView>
-            <Text style={styles.modalTitle}>{selectedAppointment?.doctor_name}</Text>
+            <Text style={styles.modalTitle}>Dr {selectedAppointment?.doctor_name}</Text>
             <View style={styles.modalDetailRow}>
               <Ionicons name="calendar" size={20} color="#6A5ACD" />
               <Text style={styles.modalDetailText}>
@@ -379,8 +380,9 @@ const styles = StyleSheet.create({
   },
   appointmentHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "center",
+    gap: 10,
     marginBottom: 15,
   },
   doctorName: {
