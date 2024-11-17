@@ -8,13 +8,14 @@ import SignUp from "../Screens/SignUp";
 import Test from "../Screens/Test";
 import Home from "../Screens/Home";
 import DoctorAppointment from "../Screens/DoctorAppointment";
+import AppointmentRecords from "../Screens/AppointmentRecords";
 
 const Navigation = () => {
   const Stack = createNativeStackNavigator();
   return (
     <View style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="doctorAppointment">
+        <Stack.Navigator initialRouteName="appointmentRecords">
           <Stack.Screen
             name="welcome"
             component={Welcome}
@@ -38,6 +39,11 @@ const Navigation = () => {
           <Stack.Screen
             name="doctorAppointment"
             component={DoctorAppointment}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="appointmentRecords"
+            component={AppointmentRecords}
             options={{ headerShown: false }}
           />
           <Stack.Screen

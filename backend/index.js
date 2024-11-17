@@ -10,9 +10,11 @@ app.use(bodyParser.json());
 
 // importing routers:
 const authRouter = require("./routes/auth/auth");
+const notificationRouter = require("./routes/notification/notification");
 
 // set up routes:
 app.use("/auth", authRouter);
+app.use("/notification", notificationRouter);
 app.get("/", (req, res) => {
   res.status(200).json("Hello World!");
 })
