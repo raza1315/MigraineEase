@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,29 +11,60 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+const { width } = Dimensions.get("window");
 
-const { width } = Dimensions.get('window');
+const Home = () => {
+  const [name, setName] = useState("");
+  const [image, setImage] = useState(null);
+  const navigation = useNavigation();
+  const isFocused = useIsFocused();
+  const fetchUserData = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/auth/profile/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const result = await res.json();
+      if (res.status === 200) {
+        setName(result.username);
+        setImage(result.image_url);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
-const dummyData = {
-  username: "Sarah",
-  attackFreeTime: "8 hours",
-};
+  useEffect(() => {
+    if (isFocused) {
+      fetchUserData();
+    }
+  }, [isFocused]);
 
-const Home = ({ navigation }) => {
   return (
-    <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.gradient}>
+    <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.gradient}>
+      <SafeAreaView style={styles.container}>
         <ScrollView style={styles.scrollView}>
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.userInfo}>
-              <Image
-                source={{ uri: "https://picsum.photos/200" }}
-                style={styles.profilePicture}
-              />
-              <Text style={styles.username}>{dummyData.username}</Text>
+              <Image source={{ uri: image }} style={styles.profilePicture} />
+              <Text style={styles.username}>{name}</Text>
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate('Welcome')} style={styles.logoutButton}>
+            <TouchableOpacity
+              onPress={async () => {
+                await AsyncStorage.removeItem("userId");
+                navigation.navigate("signIn");
+              }}
+              style={styles.logoutButton}
+            >
               <FontAwesome5 name="sign-out-alt" size={24} color="#4B0082" />
             </TouchableOpacity>
           </View>
@@ -44,33 +75,47 @@ const Home = ({ navigation }) => {
               <Text style={styles.attackFreeText}>
                 You have been attack free for
               </Text>
-              <Text style={styles.attackFreeTime}>
-                {dummyData.attackFreeTime}
-              </Text>
+              <Text style={styles.attackFreeTime}>8</Text>
             </View>
           </View>
+          {/* <Image
+            source={require("../assets/skyimage.jpeg")}
+            style={styles.bgscene}
+          /> */}
           <Image
-            source={{ uri: "https://picsum.photos/800/400" }}
+            source={require("../assets/headache.png")}
             style={styles.headacheImage}
           />
 
           {/* Treatment Manager */}
           <View style={styles.treatmentContainer}>
             <Text style={styles.sectionTitle}>Treatment Manager</Text>
-            <View style={styles.treatmentCard}>
+            <TouchableOpacity
+              style={styles.treatmentCard}
+              onPress={() => navigation.navigate("medsReminder")}
+            >
+              <Image
+                source={require("../assets/medsreminder.png")}
+                style={styles.medsTimer}
+              />
               <View>
                 <Text style={styles.treatmentLabel}>MEDICINE REMINDERS</Text>
                 <Text style={styles.medicineText}>
                   Stay on track with your treatment
                 </Text>
-                <Text style={styles.timeText}>Set up personalized reminders</Text>
+                <Text style={styles.timeText}>
+                  Set up personalized reminders
+                </Text>
               </View>
               <Ionicons name="chevron-forward" size={24} color="#6A5ACD" />
-            </View>
+            </TouchableOpacity>
           </View>
 
           {/* Doctor Appointment */}
-          <TouchableOpacity style={styles.appointmentCard}>
+          <TouchableOpacity
+            style={styles.appointmentCard}
+            onPress={() => navigation.navigate("doctorAppointment")}
+          >
             <View>
               <Text style={styles.sectionTitle}>Doctor Appointment</Text>
               <Text style={styles.appointmentText}>
@@ -84,12 +129,20 @@ const Home = ({ navigation }) => {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={24} color="#6A5ACD" />
+            <Image
+              source={require("../assets/drappointmnet.jpeg")}
+              style={styles.drappointmentImage}
+            />
           </TouchableOpacity>
 
           {/* Join Community Section */}
           <View style={styles.communityContainer}>
             <Text style={styles.sectionTitle}>Join Our Community</Text>
             <View style={styles.communityContent}>
+              <Image
+                source={require("../assets/community.jpeg")}
+                style={styles.communityImage}
+              />
               <Text style={styles.communityText}>
                 Connect with others, share experiences, and find support in our
                 MigraineEase community.
@@ -108,14 +161,17 @@ const Home = ({ navigation }) => {
                   style={styles.communityLogo}
                 />
               </View>
-              <TouchableOpacity style={styles.joinButton}>
+              <TouchableOpacity
+                style={styles.joinButton}
+                onPress={() => navigation.navigate("JoinCommunity")}
+              >
                 <Text style={styles.joinButtonText}>Join Now</Text>
               </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
-      </LinearGradient>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -145,6 +201,9 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     marginRight: 10,
+    borderWidth: 2,
+    borderColor: "white",
+    elevation: 3,
   },
   username: {
     fontSize: 18,
@@ -170,10 +229,60 @@ const styles = StyleSheet.create({
     color: "#4B0082",
     marginTop: 10,
   },
-  headacheImage: {
+  bgscene: {
     width: width,
     height: 200,
-    resizeMode: 'cover',
+    resizeMode: "cover",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: -1,
+    opacity: 0.2,
+    borderBottomEndRadius: 20,
+  },
+  headacheImage: {
+    // width: width,
+    height: 190,
+    width: 140,
+    resizeMode: "cover",
+    position: "absolute",
+    top: 15,
+    right: 30,
+    zIndex: -1,
+    opacity: 0.6,
+  },
+  medsTimer: {
+    width: width,
+    height: "120%",
+    width: 100,
+    resizeMode: "cover",
+    position: "absolute",
+    top: 12,
+    right: 15,
+    zIndex: -1,
+    opacity: 0.2,
+  },
+  drappointmentImage: {
+    width: width,
+    height: "82%",
+    width: 90,
+    resizeMode: "cover",
+    position: "absolute",
+    top: 20,
+    right: 18,
+    zIndex: -1,
+    opacity: 0.2,
+  },
+  communityImage: {
+    // width: width,
+    height: "123%",
+    width: "112%",
+    resizeMode: "cover",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: -1,
+    opacity: 0.13,
   },
   sectionTitle: {
     fontSize: 20,
@@ -199,6 +308,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    position: "relative",
   },
   treatmentLabel: {
     color: "#6A5ACD",
@@ -229,6 +339,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    position: "relative",
   },
   appointmentText: {
     color: "#6A5ACD",
@@ -254,6 +365,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    position: "relative",
+    overflow: "hidden",
   },
   communityText: {
     fontSize: 16,
@@ -270,7 +383,10 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    marginHorizontal: 5,
+    marginHorizontal: -10,
+    borderWidth: 2.2,
+    borderColor: "white",
+    elevation: 3,
   },
   joinButton: {
     backgroundColor: "#6A5ACD",
