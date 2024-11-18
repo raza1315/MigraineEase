@@ -1,243 +1,165 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  FlatList,
-  Image,
-  TouchableOpacity,
   StyleSheet,
+  FlatList,
   TextInput,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
-const initialChats = [
-  {
-    id: "1",
-    name: "Angel Curtis",
-    message: "Please help me find a good monitor for tracking migraines",
-    time: "02:11",
-    unread: 2,
-    image: "https://picsum.photos/id/1050/200",
-  },
-  {
-    id: "2",
-    name: "Zaire Dorwart",
-    message: "Checking in about your migraine diary",
-    time: "02:11",
-    unread: 0,
-    image: "https://picsum.photos/id/1055/200",
-  },
-  {
-    id: "3",
-    name: "Support Group",
-    message: "Emma: Thanks for sharing your experience!",
-    time: "02:11",
-    unread: 2,
-    image: "https://picsum.photos/id/1060/200",
-  },
-  {
-    id: "4",
-    name: "Dr. Johnson",
-    message: "You're scheduled for next week",
-    time: "02:11",
-    unread: 0,
-    image: "https://picsum.photos/id/1065/200",
-  },
-  {
-    id: "5",
-    name: "Medication Reminder",
-    message: "Time to take your evening dose",
-    time: "02:11",
-    unread: 1,
-    image: "https://picsum.photos/id/1070/200",
-  },
+// Dummy data for messages
+const initialMessages = [
+  { id: '1', text: 'Hi there! How are you feeling today?', sender: 'other', timestamp: '10:00 AM' },
+  { id: '2', text: 'I\'m having a bit of a headache, actually.', sender: 'me', timestamp: '10:02 AM' },
+  { id: '3', text: 'I\'m sorry to hear that. Have you taken any medication?', sender: 'other', timestamp: '10:03 AM' },
+  { id: '4', text: 'Not yet, I was thinking of trying some relaxation techniques first.', sender: 'me', timestamp: '10:05 AM' },
+  { id: '5', text: 'That\'s a good idea. Deep breathing can sometimes help with tension headaches.', sender: 'other', timestamp: '10:06 AM' },
 ];
 
-const debounce = (func, delay) => {
-  let timeoutId;
-  return (...args) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func(...args), delay);
-  };
-};
+const ChatScreen = () => {
+  const [messages, setMessages] = useState(initialMessages);
+  const [inputMessage, setInputMessage] = useState('');
 
-export default function ChatScreen() {
-  const [chats, setChats] = useState(initialChats);
-  const [searchQuery, setSearchQuery] = useState("");
+  const renderMessage = ({ item }) => (
+    <View style={[styles.messageBubble, item.sender === 'me' ? styles.myMessage : styles.otherMessage]}>
+      <Text style={styles.messageText}>{item.text}</Text>
+      <Text style={styles.timestamp}>{item.timestamp}</Text>
+    </View>
+  );
 
-  const handleSearch = useCallback((text) => {
-    setSearchQuery(text);
-    if (text) {
-      const filteredChats = initialChats.filter(
-        (chat) =>
-          chat.name.toLowerCase().includes(text.toLowerCase()) ||
-          chat.message.toLowerCase().includes(text.toLowerCase())
-      );
-      setChats(filteredChats);
-    } else {
-      setChats(initialChats);
+  const sendMessage = () => {
+    if (inputMessage.trim().length > 0) {
+      const newMessage = {
+        id: Date.now().toString(),
+        text: inputMessage.trim(),
+        sender: 'me',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages([...messages, newMessage]);
+      setInputMessage('');
     }
-  }, []);
-
-  const debouncedSearch = useCallback(
-    debounce((text) => {
-      console.log("Search query:", text);
-      handleSearch(text);
-    }, 1500),
-    []
-  );
-
-  useEffect(() => {
-    debouncedSearch(searchQuery);
-  }, [searchQuery, debouncedSearch]);
-
-  const renderChat = ({ item }) => (
-    <TouchableOpacity style={styles.chatItem}>
-      <Image source={{ uri: item.image }} style={styles.chatImage} />
-      <View style={styles.chatContent}>
-        <Text style={styles.chatName}>{item.name}</Text>
-        <Text style={styles.chatMessage} numberOfLines={1}>
-          {item.message}
-        </Text>
-      </View>
-      <View style={styles.chatMeta}>
-        <Text style={styles.chatTime}>{item.time}</Text>
-        {item.unread > 0 && (
-          <View style={styles.unreadBadge}>
-            <Text style={styles.unreadText}>{item.unread}</Text>
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.searchContainer}>
-          <Ionicons
-            name="search"
-            size={20}
-            color="#6A5ACD"
-            style={styles.searchIcon}
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search"
-            placeholderTextColor="#6A5ACD"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
+      <LinearGradient colors={['#F0F8FF', '#E6E6FA']} style={styles.gradient}>
+        <View style={styles.header}>
+          <Ionicons name="arrow-back" size={24} color="#4B0082" />
+          <Text style={styles.headerTitle}>Chat with Support</Text>
+          <Ionicons name="ellipsis-vertical" size={24} color="#4B0082" />
         </View>
-      </View>
 
-      <View style={styles.chatsHeader}>
-        <Text style={styles.chatsTitle}>Chats</Text>
-        <TouchableOpacity>
-          <Ionicons name="ellipsis-horizontal" size={24} color="#4B0082" />
-        </TouchableOpacity>
-      </View>
+        <FlatList
+          data={messages}
+          renderItem={renderMessage}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.messageList}
+          inverted
+        />
 
-      <FlatList
-        data={chats}
-        renderItem={renderChat}
-        keyExtractor={(item) => item.id}
-        style={styles.chatsList}
-      />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+          style={styles.inputContainer}
+        >
+          <TextInput
+            style={styles.input}
+            value={inputMessage}
+            onChangeText={setInputMessage}
+            placeholder="Type a message..."
+            placeholderTextColor="#A0A0A0"
+          />
+          <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+            <Ionicons name="send" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+      </LinearGradient>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+  },
+  gradient: {
+    flex: 1,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#E6E6FA",
+    borderBottomColor: '#E6E6FA',
   },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F0F0FF",
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4B0082',
+  },
+  messageList: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    padding: 16,
+  },
+  messageBubble: {
+    maxWidth: '80%',
+    padding: 12,
     borderRadius: 20,
-    paddingHorizontal: 12,
+    marginBottom: 8,
   },
-  searchIcon: {
-    marginRight: 8,
+  myMessage: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#6A5ACD',
   },
-  searchInput: {
+  otherMessage: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#FFFFFF',
+  },
+  messageText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+  },
+  timestamp: {
+    fontSize: 12,
+    color: '#E0E0E0',
+    alignSelf: 'flex-end',
+    marginTop: 4,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  input: {
     flex: 1,
     height: 40,
-    color: "#4B0082",
-    fontSize: 16,
-  },
-  chatsHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    backgroundColor: '#F0F0FF',
+    borderRadius: 20,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E6E6FA",
+    marginRight: 8,
+    color: '#4B0082',
   },
-  chatsTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#4B0082",
-  },
-  chatsList: {
-    flex: 1,
-  },
-  chatItem: {
-    flexDirection: "row",
-    padding: 16,
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E6E6FA",
-  },
-  chatImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  chatContent: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  chatName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#4B0082",
-    marginBottom: 4,
-  },
-  chatMessage: {
-    fontSize: 14,
-    color: "#6A5ACD",
-  },
-  chatMeta: {
-    alignItems: "flex-end",
-  },
-  chatTime: {
-    fontSize: 12,
-    color: "#6A5ACD",
-    marginBottom: 4,
-  },
-  unreadBadge: {
-    backgroundColor: "#6A5ACD",
-    borderRadius: 10,
-    minWidth: 20,
-    height: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 6,
-  },
-  unreadText: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    fontWeight: "bold",
+  sendButton: {
+    backgroundColor: '#6A5ACD',
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
+
+export default ChatScreen;

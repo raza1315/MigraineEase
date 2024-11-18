@@ -5,19 +5,21 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 // initialize express app and setup middleware:
 const app = express();
-app.use(cors({ origin: true }))
+app.use(cors({ origin: true }));
 app.use(bodyParser.json());
 
 // importing routers:
 const authRouter = require("./routes/auth/auth");
 const notificationRouter = require("./routes/notification/notification");
+const chatRouter = require("./routes/chat/chat");
 
 // set up routes:
 app.use("/auth", authRouter);
 app.use("/notification", notificationRouter);
+app.use("/chat", chatRouter);
 app.get("/", (req, res) => {
   res.status(200).json("Hello World!");
-})
+});
 
 // start the server:
 app.listen(3000, () => {

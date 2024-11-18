@@ -20,6 +20,7 @@ import AppointmentRecords from "../Screens/AppointmentRecords";
 import MedicineReminder from "../Screens/MedicineReminder";
 import MedicationRecords from "../Screens/MedicationRecords";
 import Settings from "../Screens/Settings";
+import ChatRoom from "../Screens/ChatRoom";
 
 const WaveCircle = ({ delay = 0, duration = 2000 }) => {
   const animation = useRef(new Animated.Value(0)).current;
@@ -223,7 +224,7 @@ const TabNavigation = () => {
           },
         }}
         name="chats"
-        component={Test}
+        component={ChatRoom}
       />
       <Tab.Screen
         options={{
