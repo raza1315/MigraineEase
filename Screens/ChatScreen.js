@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -6,16 +6,16 @@ import {
   View,
   TextInput,
   TouchableOpacity,
+  Platform,
+  Modal,
   Image,
   KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  Modal,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import io from "socket.io-client";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, FontAwesome, Entypo, Feather } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ChatScreen = () => {
   const route = useRoute();
@@ -27,7 +27,39 @@ const ChatScreen = () => {
   const [socket, setSocket] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const scrollViewRef = useRef(null);
-
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "",
+      headerLeft: () => (
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={26} color="#4B0082" />
+          </TouchableOpacity>
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 100,
+                borderWidth: 1,
+                borderColor: "#4B0082",
+                padding: 1.5,
+              }}
+            >
+              <Image
+                style={{ height: 38, width: 38, borderRadius: 100 }}
+                source={{ uri: friendImage }}
+              />
+            </View>
+            <Text style={{ color: "#4B0082", fontSize: 16, fontWeight: "500" }}>
+              {friendName}
+            </Text>
+        </View>
+      ),
+      headerStyle: {
+        backgroundColor: "white",
+      },
+    });
+  }, []);
   const scrollToBottom = () => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd();
@@ -85,7 +117,10 @@ const ChatScreen = () => {
       socket.on("clientListener", (message) => {
         const time = new Date();
         const formattedTime = GetTimeOfMsg(time);
-        setChats((prevChats) => [...prevChats, {...message,time:formattedTime}]);
+        setChats((prevChats) => [
+          ...prevChats,
+          { ...message, time: formattedTime },
+        ]);
         scrollToBottom();
       });
     }
@@ -111,36 +146,80 @@ const ChatScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.profileButton} onPress={() => setShowProfile(true)}>
-          <Image source={{ uri: friendImage }} style={styles.avatar} />
-          <Text style={styles.headerName}>{friendName}</Text>
-        </TouchableOpacity>
-      </View>
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.chatContainer}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
-      >
-        <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollViewContent}>
-        {chats.map((msg, index) => (
-          msg.sentTo == friendId ?
-            <View key={index} style={{ alignSelf: "flex-end", justifyContent: "center", paddingHorizontal: 11, paddingVertical: 6, backgroundColor: "rgba(255,255,255,0.13)", maxWidth: "77%", marginBottom: 10, marginRight: 5, borderBottomLeftRadius: 13, borderBottomRightRadius: 15, borderTopLeftRadius: 15 }}>
-              <Text style={{ color:"pink",marginRight: "15%", fontSize: 16 }}>{msg.message}</Text>
-              <Text style={{ color: "#98979a", fontSize: 12, textAlign: 'right', marginTop: "-4.7%" }}>{msg.time}</Text>
-
-            </View>
-            :
-            <View key={index} style={{ alignSelf: "flex-start", justifyContent: "center", paddingHorizontal: 11, paddingVertical: 6, backgroundColor: "rgba(255,255,255,0.13)", maxWidth: "77 %", marginBottom: 10, marginLeft: 5, borderBottomLeftRadius: 15, borderBottomRightRadius: 13, borderTopRightRadius: 15 }}>
-              <Text style={{ color:"pink",marginRight: "15%", fontSize: 16 }}>{msg.message}</Text>
-              <Text style={{ color: "#98979a", fontSize: 12, textAlign: 'right', marginTop: "-4.7%" }}>{msg.time}</Text>
-
-            </View>
-        ))}
+      <KeyboardAvoidingView style={styles.chatContainer}>
+        <ScrollView
+          ref={scrollViewRef}
+          contentContainerStyle={styles.scrollViewContent}
+        >
+          {chats.map((msg, index) =>
+            msg.sentTo == friendId ? (
+              <View
+                key={index}
+                style={{
+                  alignSelf: "flex-end",
+                  justifyContent: "center",
+                  paddingHorizontal: 11,
+                  paddingVertical: 6,
+                  backgroundColor: "rgba(255,255,255,0.13)",
+                  maxWidth: "77%",
+                  marginBottom: 10,
+                  marginRight: 5,
+                  borderBottomLeftRadius: 13,
+                  borderBottomRightRadius: 15,
+                  borderTopLeftRadius: 15,
+                }}
+              >
+                <Text
+                  style={{ color: "rgba(255,255,255,0.9)", marginRight: "15%", fontSize: 16 }}
+                >
+                  {msg.message}
+                </Text>
+                <Text
+                  style={{
+                    color: "rgba(255,255,255,0.65)",
+                    fontSize: 12,
+                    textAlign: "right",
+                    marginTop: "-4.7%",
+                  }}
+                >
+                  {msg.time}
+                </Text>
+              </View>
+            ) : (
+              <View
+                key={index}
+                style={{
+                  alignSelf: "flex-start",
+                  justifyContent: "center",
+                  paddingHorizontal: 11,
+                  paddingVertical: 6,
+                  backgroundColor: "rgba(255,255,255,0.13)",
+                  maxWidth: "77 %",
+                  marginBottom: 10,
+                  marginLeft: 5,
+                  borderBottomLeftRadius: 15,
+                  borderBottomRightRadius: 13,
+                  borderTopRightRadius: 15,
+                }}
+              >
+                <Text
+                  style={{ color: "rgba(255,255,255,0.9)", marginRight: "15%", fontSize: 16 }}
+                >
+                  {msg.message}
+                </Text>
+                <Text
+                  style={{
+                    color: "rgba(255,255,255,0.65)",
+                    fontSize: 12,
+                    textAlign: "right",
+                    marginTop: "-4.7%",
+                  }}
+                >
+                  {msg.time}
+                </Text>
+              </View>
+            )
+          )}
         </ScrollView>
 
         <View style={styles.inputContainer}>
@@ -167,7 +246,10 @@ const ChatScreen = () => {
           <View style={styles.modalContent}>
             <Image source={{ uri: friendImage }} style={styles.modalAvatar} />
             <Text style={styles.modalName}>{friendName}</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={() => setShowProfile(false)}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowProfile(false)}
+            >
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -181,13 +263,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+    marginTop: -50,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#4B0082",
-  },
+
   profileButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -206,6 +284,7 @@ const styles = StyleSheet.create({
   },
   chatContainer: {
     flex: 1,
+    backgroundColor: "rgba(75, 0, 130, 0.8)",
   },
   scrollViewContent: {
     padding: 10,
