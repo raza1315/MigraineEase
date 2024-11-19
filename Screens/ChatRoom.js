@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation ,useIsFocused} from "@react-navigation/native";
 
 const debounce = (func, delay) => {
   let timeoutId;
@@ -29,7 +29,12 @@ export default function ChatRoom() {
   const [error, setError] = useState(null);
   const originalChats = useRef([]);
   const navigation = useNavigation();
-
+  const isFocused = useIsFocused();
+useEffect(() => {
+  if(isFocused){
+    fetchUsers();
+  }
+},[isFocused])
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -48,7 +53,7 @@ export default function ChatRoom() {
       const chatData = data.map((user) => ({
         id: user.user_id.toString(),
         name: user.username,
-        message: "No messages yet",
+        message: user.email,
         time: "",
         unread: 0,
         image: user.image_url|| "https://picsum.photos/id/1050/200",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -6,64 +6,42 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  Platform,
   Modal,
   Image,
   KeyboardAvoidingView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import {
+  useRoute,
+  useNavigation,
+  useIsFocused,
+} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import io from "socket.io-client";
-import { Ionicons, FontAwesome, Entypo, Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ChatScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { friendName, friendImage, friendId } = route.params;
+  const isFocused = useIsFocused();
+  const { friendName, friendImage, friendId,email } = route.params;
   const [userId, setUserId] = useState(null);
   const [chats, setChats] = useState([]);
   const [message, setMessage] = useState("");
   const [socket, setSocket] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const scrollViewRef = useRef(null);
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: "",
-      headerLeft: () => (
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <TouchableOpacity onPress={() => navigation.navigate("chats")}>
-            <Ionicons name="arrow-back" size={26} color="#4B0082" />
-          </TouchableOpacity>
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 100,
-              borderWidth: 1,
-              borderColor: "#4B0082",
-              padding: 1.5,
-            }}
-          >
-            <Image
-              style={{ height: 38, width: 38, borderRadius: 100 }}
-              source={{ uri: friendImage }}
-            />
-          </View>
-          <Text style={{ color: "#4B0082", fontSize: 16, fontWeight: "500" }}>
-            {friendName}
-          </Text>
-        </View>
-      ),
-      headerStyle: {
-        backgroundColor: "white",
-      },
-    });
-  }, []);
+  useEffect(() => {
+    if (chats.length > 0) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [chats]);
   const scrollToBottom = () => {
     if (scrollViewRef.current) {
-      scrollViewRef.current.scrollToEnd();
+      scrollViewRef.current.scrollToEnd({ animated: true});
     }
   };
 
@@ -148,10 +126,49 @@ const ChatScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.gradient}>
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            height: 60,
+            width: "100%",
+            backgroundColor: "white",
+            flexDirection: "row",
+            paddingHorizontal: 20,
+            gap: 10,
+            alignItems: "center",
+          }}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={26}
+            color="#4B0082"
+            onPress={() => navigation.goBack()}
+          />
+          <TouchableOpacity
+            onPress={() => setShowProfile(true)}
+            style={{
+              borderWidth: 1.3,
+              borderColor: "#4B0082",
+              padding: 2,
+              borderRadius: 100,
+            }}
+          >
+            <Image
+              style={{ height: 40, width: 40, borderRadius: 100 }}
+              source={{ uri: friendImage }}
+            />
+          </TouchableOpacity>
+          <Text style={{ color: "#4B0082", fontSize: 20, fontWeight: "500" }}>
+            {friendName}
+          </Text>
+        </View>
         <KeyboardAvoidingView style={styles.chatContainer}>
           <ScrollView
             ref={scrollViewRef}
             contentContainerStyle={styles.scrollViewContent}
+            onContentSizeChange={() => scrollToBottom()}
+            // contentContainerStyle={styles.scrollViewContent}
           >
             {chats.map((msg, index) =>
               msg.sentTo == friendId ? (
@@ -274,7 +291,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    marginTop: -50,
+    position: "relative",
   },
 
   profileButton: {
@@ -385,6 +402,8 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
+    position: "relative",
+    paddingTop: 61,
   },
 });
 
