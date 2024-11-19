@@ -11,6 +11,7 @@ import {
   Image,
   KeyboardAvoidingView,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import io from "socket.io-client";
@@ -32,27 +33,27 @@ const ChatScreen = () => {
       title: "",
       headerLeft: () => (
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.navigate("chats")}>
             <Ionicons name="arrow-back" size={26} color="#4B0082" />
           </TouchableOpacity>
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 100,
-                borderWidth: 1,
-                borderColor: "#4B0082",
-                padding: 1.5,
-              }}
-            >
-              <Image
-                style={{ height: 38, width: 38, borderRadius: 100 }}
-                source={{ uri: friendImage }}
-              />
-            </View>
-            <Text style={{ color: "#4B0082", fontSize: 16, fontWeight: "500" }}>
-              {friendName}
-            </Text>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: 100,
+              borderWidth: 1,
+              borderColor: "#4B0082",
+              padding: 1.5,
+            }}
+          >
+            <Image
+              style={{ height: 38, width: 38, borderRadius: 100 }}
+              source={{ uri: friendImage }}
+            />
+          </View>
+          <Text style={{ color: "#4B0082", fontSize: 16, fontWeight: "500" }}>
+            {friendName}
+          </Text>
         </View>
       ),
       headerStyle: {
@@ -146,115 +147,125 @@ const ChatScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView style={styles.chatContainer}>
-        <ScrollView
-          ref={scrollViewRef}
-          contentContainerStyle={styles.scrollViewContent}
-        >
-          {chats.map((msg, index) =>
-            msg.sentTo == friendId ? (
-              <View
-                key={index}
-                style={{
-                  alignSelf: "flex-end",
-                  justifyContent: "center",
-                  paddingHorizontal: 11,
-                  paddingVertical: 6,
-                  backgroundColor: "rgba(255,255,255,0.13)",
-                  maxWidth: "77%",
-                  marginBottom: 10,
-                  marginRight: 5,
-                  borderBottomLeftRadius: 13,
-                  borderBottomRightRadius: 15,
-                  borderTopLeftRadius: 15,
-                }}
-              >
-                <Text
-                  style={{ color: "rgba(255,255,255,0.9)", marginRight: "15%", fontSize: 16 }}
-                >
-                  {msg.message}
-                </Text>
-                <Text
+      <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.gradient}>
+        <KeyboardAvoidingView style={styles.chatContainer}>
+          <ScrollView
+            ref={scrollViewRef}
+            contentContainerStyle={styles.scrollViewContent}
+          >
+            {chats.map((msg, index) =>
+              msg.sentTo == friendId ? (
+                <View
+                  key={index}
                   style={{
-                    color: "rgba(255,255,255,0.65)",
-                    fontSize: 12,
-                    textAlign: "right",
-                    marginTop: "-4.7%",
+                    alignSelf: "flex-end",
+                    justifyContent: "center",
+                    paddingHorizontal: 11,
+                    paddingVertical: 6,
+                    backgroundColor: "rgba(75, 50, 170, 0.7)",
+                    maxWidth: "77%",
+                    marginBottom: 10,
+                    marginRight: 5,
+                    borderBottomLeftRadius: 13,
+                    borderBottomRightRadius: 15,
+                    borderTopLeftRadius: 15,
                   }}
                 >
-                  {msg.time}
-                </Text>
-              </View>
-            ) : (
-              <View
-                key={index}
-                style={{
-                  alignSelf: "flex-start",
-                  justifyContent: "center",
-                  paddingHorizontal: 11,
-                  paddingVertical: 6,
-                  backgroundColor: "rgba(255,255,255,0.13)",
-                  maxWidth: "77 %",
-                  marginBottom: 10,
-                  marginLeft: 5,
-                  borderBottomLeftRadius: 15,
-                  borderBottomRightRadius: 13,
-                  borderTopRightRadius: 15,
-                }}
-              >
-                <Text
-                  style={{ color: "rgba(255,255,255,0.9)", marginRight: "15%", fontSize: 16 }}
-                >
-                  {msg.message}
-                </Text>
-                <Text
+                  <Text
+                    style={{
+                      color: "rgba(255,255,255,1)",
+                      marginRight: "15%",
+                      fontSize: 16,
+                    }}
+                  >
+                    {msg.message}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "rgba(255,255,255,0.65)",
+                      fontSize: 12,
+                      textAlign: "right",
+                      marginTop: "-4.7%",
+                    }}
+                  >
+                    {msg.time}
+                  </Text>
+                </View>
+              ) : (
+                <View
+                  key={index}
                   style={{
-                    color: "rgba(255,255,255,0.65)",
-                    fontSize: 12,
-                    textAlign: "right",
-                    marginTop: "-4.7%",
+                    alignSelf: "flex-start",
+                    justifyContent: "center",
+                    paddingHorizontal: 11,
+                    paddingVertical: 6,
+                    backgroundColor: "rgba(75, 50, 170, 0.7)",
+                    maxWidth: "77 %",
+                    marginBottom: 10,
+                    marginLeft: 5,
+                    borderBottomLeftRadius: 15,
+                    borderBottomRightRadius: 13,
+                    borderTopRightRadius: 15,
                   }}
                 >
-                  {msg.time}
-                </Text>
-              </View>
-            )
-          )}
-        </ScrollView>
+                  <Text
+                    style={{
+                      color: "rgba(255,255,255,1)",
+                      marginRight: "15%",
+                      fontSize: 16,
+                    }}
+                  >
+                    {msg.message}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "rgba(255,255,255,0.65)",
+                      fontSize: 12,
+                      textAlign: "right",
+                      marginTop: "-4.7%",
+                    }}
+                  >
+                    {msg.time}
+                  </Text>
+                </View>
+              )
+            )}
+          </ScrollView>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={message}
-            onChangeText={setMessage}
-            placeholder="Type a message..."
-            placeholderTextColor="#6A5ACD"
-          />
-          <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-            <Ionicons name="send" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-
-      <Modal
-        visible={showProfile}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setShowProfile(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Image source={{ uri: friendImage }} style={styles.modalAvatar} />
-            <Text style={styles.modalName}>{friendName}</Text>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowProfile(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              value={message}
+              onChangeText={setMessage}
+              placeholder="Type a message..."
+              placeholderTextColor="#6A5ACD"
+            />
+            <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+              <Ionicons name="send" size={24} color="white" />
             </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
+        </KeyboardAvoidingView>
+
+        <Modal
+          visible={showProfile}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setShowProfile(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Image source={{ uri: friendImage }} style={styles.modalAvatar} />
+              <Text style={styles.modalName}>{friendName}</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setShowProfile(false)}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </LinearGradient>
     </SafeAreaView>
   );
 };
@@ -284,7 +295,6 @@ const styles = StyleSheet.create({
   },
   chatContainer: {
     flex: 1,
-    backgroundColor: "rgba(75, 0, 130, 0.8)",
   },
   scrollViewContent: {
     padding: 10,
@@ -372,6 +382,9 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: "white",
     fontWeight: "bold",
+  },
+  gradient: {
+    flex: 1,
   },
 });
 
