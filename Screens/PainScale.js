@@ -3,13 +3,9 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Dimensions,
   Image,
   StatusBar
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -81,8 +77,8 @@ export default function PainScale() {
     <LinearGradient colors={["#1A1B1E", "#1A1B1E"]} style={{ flex: 1 }}>
       <StatusBar
         translucent={true}
-        barStyle="light-content"
         backgroundColor="transparent"
+        barStyle="light-content"
       />
       <SafeAreaView
         style={{ flex: 1, alignItems: "center", paddingHorizontal: 0 }}
