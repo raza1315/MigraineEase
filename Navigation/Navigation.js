@@ -21,6 +21,7 @@ import MedicineReminder from "../Screens/MedicineReminder";
 import MedicationRecords from "../Screens/MedicationRecords";
 import Settings from "../Screens/Settings";
 import ChatRoom from "../Screens/ChatRoom";
+import ChatScreen from "../Screens/ChatScreen";
 
 const WaveCircle = ({ delay = 0, duration = 2000 }) => {
   const animation = useRef(new Animated.Value(0)).current;
@@ -100,6 +101,11 @@ const Navigation = () => {
           <Stack.Screen
             name="medsRecords"
             component={MedicationRecords}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ChatScreen"
+            component={ChatScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

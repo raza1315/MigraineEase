@@ -21,6 +21,21 @@ router.get("/getUsers/:userId", async (req, res) => {
   }
 });
 
+// /chat/getMessages?senderId=1&receiverId=2
+router.get("/getMessages", async (req, res) => {
+  try {
+    const { senderId, receiverId } = req.query;
+    console.log(senderId, receiverId)
+    const messages = await db("chats")
+      .where({ sender_id: senderId, receiver_id: receiverId })
+      .orWhere({ sender_id: receiverId, receiver_id: senderId });
+      console.log(messages)
+    res.status(200).json(messages);
+  } catch (error) {
+    console.log("Error in /chat/getMessages", error);
+    res.status(500).json({ error: error.message });
+  }
+})
 // export router:
 
 module.exports = router;

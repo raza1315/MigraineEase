@@ -1,165 +1,144 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TextInput,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
-// Dummy data for messages
-const initialMessages = [
-  { id: '1', text: 'Hi there! How are you feeling today?', sender: 'other', timestamp: '10:00 AM' },
-  { id: '2', text: 'I\'m having a bit of a headache, actually.', sender: 'me', timestamp: '10:02 AM' },
-  { id: '3', text: 'I\'m sorry to hear that. Have you taken any medication?', sender: 'other', timestamp: '10:03 AM' },
-  { id: '4', text: 'Not yet, I was thinking of trying some relaxation techniques first.', sender: 'me', timestamp: '10:05 AM' },
-  { id: '5', text: 'That\'s a good idea. Deep breathing can sometimes help with tension headaches.', sender: 'other', timestamp: '10:06 AM' },
-];
+export default function App() {
+  const [selectedBox, setSelectedBox] = useState(null);
 
-const ChatScreen = () => {
-  const [messages, setMessages] = useState(initialMessages);
-  const [inputMessage, setInputMessage] = useState('');
+  const boxes = [
+    { id: 1, label: 'Upper Left' },
+    { id: 2, label: 'Middle Left' },
+    { id: 3, label: 'Lower Left' },
+    { id: 4, label: 'Upper Right' },
+    { id: 5, label: 'Middle Right' },
+    { id: 6, label: 'Lower Right' },
+  ];
 
-  const renderMessage = ({ item }) => (
-    <View style={[styles.messageBubble, item.sender === 'me' ? styles.myMessage : styles.otherMessage]}>
-      <Text style={styles.messageText}>{item.text}</Text>
-      <Text style={styles.timestamp}>{item.timestamp}</Text>
-    </View>
-  );
-
-  const sendMessage = () => {
-    if (inputMessage.trim().length > 0) {
-      const newMessage = {
-        id: Date.now().toString(),
-        text: inputMessage.trim(),
-        sender: 'me',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setMessages([...messages, newMessage]);
-      setInputMessage('');
-    }
+  const handleBoxPress = (boxId) => {
+    setSelectedBox(boxId === selectedBox ? null : boxId);
   };
+
+  const Box = ({ id, label }) => (
+    <TouchableOpacity
+      onPress={() => handleBoxPress(id)}
+      style={[
+        styles.box,
+        selectedBox === id && styles.selectedBox
+      ]}
+    >
+      <Text style={[
+        styles.boxText,
+        selectedBox === id && styles.selectedBoxText
+      ]}>
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={['#F0F8FF', '#E6E6FA']} style={styles.gradient}>
-        <View style={styles.header}>
-          <Ionicons name="arrow-back" size={24} color="#4B0082" />
-          <Text style={styles.headerTitle}>Chat with Support</Text>
-          <Ionicons name="ellipsis-vertical" size={24} color="#4B0082" />
+      <Text style={styles.title}>Select Pain Location</Text>
+      
+      <View style={styles.heartContainer}>
+        <View style={styles.boxesContainer}>
+          {/* Left Column */}
+          <View style={styles.column}>
+            {boxes.slice(0, 3).map(box => (
+              <Box key={box.id} id={box.id} label={box.label} />
+            ))}
+          </View>
+
+          {/* Right Column */}
+          <View style={styles.column}>
+            {boxes.slice(3).map(box => (
+              <Box key={box.id} id={box.id} label={box.label} />
+            ))}
+          </View>
         </View>
 
-        <FlatList
-          data={messages}
-          renderItem={renderMessage}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.messageList}
-          inverted
-        />
-
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
-          style={styles.inputContainer}
-        >
-          <TextInput
-            style={styles.input}
-            value={inputMessage}
-            onChangeText={setInputMessage}
-            placeholder="Type a message..."
-            placeholderTextColor="#A0A0A0"
+        <Svg width={180} height={160} viewBox="0 0 24 24" style={styles.heartOutline}>
+          <Path
+            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            stroke="white"
+            strokeWidth="1"
+            fill="none"
           />
-          <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-            <Ionicons name="send" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </LinearGradient>
+        </Svg>
+      </View>
+
+      {selectedBox && (
+        <Text style={styles.selectedText}>
+          Selected: {boxes.find(box => box.id === selectedBox)?.label}
+        </Text>
+      )}
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#1a1b26',
+    padding: 20,
   },
-  gradient: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E6E6FA',
-  },
-  headerTitle: {
-    fontSize: 18,
+  title: {
+    fontSize: 24,
+    color: 'white',
+    textAlign: 'center',
+    marginBottom: 40,
     fontWeight: 'bold',
-    color: '#4B0082',
   },
-  messageList: {
-    flexGrow: 1,
-    justifyContent: 'flex-end',
-    padding: 16,
-  },
-  messageBubble: {
-    maxWidth: '80%',
-    padding: 12,
-    borderRadius: 20,
-    marginBottom: 8,
-  },
-  myMessage: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#6A5ACD',
-  },
-  otherMessage: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#FFFFFF',
-  },
-  messageText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-  },
-  timestamp: {
-    fontSize: 12,
-    color: '#E0E0E0',
-    alignSelf: 'flex-end',
-    marginTop: 4,
-  },
-  inputContainer: {
-    flexDirection: 'row',
+  heartContainer: {
     alignItems: 'center',
-    padding: 8,
-    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    position: 'relative',
+    height: 160,
   },
-  input: {
-    flex: 1,
-    height: 40,
-    backgroundColor: '#F0F0FF',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    marginRight: 8,
-    color: '#4B0082',
+  heartOutline: {
+    position: 'absolute',
+    zIndex: 1,
   },
-  sendButton: {
-    backgroundColor: '#6A5ACD',
-    borderRadius: 20,
+  boxesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    position: 'absolute',
+    zIndex: 2,
+    width: 120,
+    height: 120,
+  },
+  column: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    height: '100%',
+  },
+  box: {
     width: 40,
-    height: 40,
+    height: 35,
+    backgroundColor: '#4a9caa',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 0.5,
+    borderColor: '#ffffff33',
+    margin: 2,
+  },
+  selectedBox: {
+    backgroundColor: '#2d6069',
+    borderColor: '#ffffff',
+    borderWidth: 1,
+    transform: [{ scale: 1.05 }],
+  },
+  boxText: {
+    color: 'white',
+    fontSize: 8,
+    fontWeight: '500',
+  },
+  selectedBoxText: {
+    fontWeight: 'bold',
+  },
+  selectedText: {
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 30,
   },
 });
-
-export default ChatScreen;

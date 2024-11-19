@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 const debounce = (func, delay) => {
   let timeoutId;
@@ -27,6 +28,7 @@ export default function ChatRoom() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const originalChats = useRef([]);
+  const navigation = useNavigation();
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -49,10 +51,10 @@ export default function ChatRoom() {
         message: "No messages yet",
         time: "",
         unread: 0,
-        image: user.profile_picture || "https://picsum.photos/id/1050/200",
+        image: user.image_url|| "https://picsum.photos/id/1050/200",
       }));
       setChats(chatData);
-      originalChats.current = chatData; // Cache original chats
+      originalChats.current = chatData;
     } catch (err) {
       console.error("Error fetching users:", err);
       setError(err.message);
@@ -79,7 +81,7 @@ export default function ChatRoom() {
         setChats(originalChats.current);
       }
     },
-    [] // No dependencies to ensure stability
+    []
   );
 
   const debouncedSearch = useCallback(
@@ -90,8 +92,17 @@ export default function ChatRoom() {
     [handleSearch]
   );
 
-  const renderChat = ({ item }) => (
-    <TouchableOpacity style={styles.chatItem}>
+  const navigateToChatScreen = useCallback((user) => {
+    navigation.navigate("ChatScreen", {
+      friendName: user.name,
+      friendId: user.id,
+      friendImage: user.image,
+      email: user.email,
+    });
+  }, [navigation]);
+
+  const renderChat = useCallback(({ item }) => (
+    <TouchableOpacity style={styles.chatItem} onPress={() => navigateToChatScreen(item)}>
       <Image source={{ uri: item.image }} style={styles.chatImage} />
       <View style={styles.chatContent}>
         <Text style={styles.chatName}>{item.name}</Text>
@@ -108,7 +119,7 @@ export default function ChatRoom() {
         )}
       </View>
     </TouchableOpacity>
-  );
+  ), [navigateToChatScreen]);
 
   if (loading) {
     return (
