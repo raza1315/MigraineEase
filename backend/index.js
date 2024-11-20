@@ -15,13 +15,15 @@ app.use(bodyParser.json());
 const authRouter = require("./routes/auth/auth");
 const notificationRouter = require("./routes/notification/notification");
 const chatRouter = require("./routes/chat/chat");
+const migraineAttackRouter = require("./routes/migraineAttack/migraineAttack");
 
 // set up routes:
 app.use("/auth", authRouter);
 app.use("/notification", notificationRouter);
 app.use("/chat", chatRouter);
+app.use("/migraineAttack", migraineAttackRouter);
 app.get("/", (req, res) => {
-  res.status(200).json("Hello World!");
+  res.status(200).json("Server is Running");
 });
 
 // start the server:

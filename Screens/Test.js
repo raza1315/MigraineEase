@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const AttackType = () => {
+const Test = () => {
   return (
     <View>
       <Text>AttackType</Text>
@@ -9,4 +9,4 @@ const AttackType = () => {
   )
 }
 
-export default AttackType
+export default Test

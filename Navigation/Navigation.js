@@ -13,11 +13,11 @@ import { AntDesign, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import Welcome from "../Screens/Welcome";
 import SignIn from "../Screens/SignIn";
 import SignUp from "../Screens/SignUp";
-import AttackTypes from "../Screens/AttackType";
+import Test from "../Screens/Test";
 import MedsTaken from "../Screens/MedsTaken";
 import ReliefMethods from "../Screens/ReliefMethods";
 import Conclusion from "../Screens/Conclusion";
-import AttackTimeSelector from "../Screens/Test2";
+import Test2 from "../Screens/Test2";
 import Home from "../Screens/Home";
 import DoctorAppointment from "../Screens/DoctorAppointment";
 import AppointmentRecords from "../Screens/AppointmentRecords";
@@ -218,7 +218,7 @@ const TabNavigation = () => {
           },
         }}
         name="test"
-        component={AttackTypes}
+        component={Test}
       />
       <Tab.Screen
         options={{
@@ -247,7 +247,7 @@ const TabNavigation = () => {
           },
         }}
         name="migraine"
-        component={AttackTimeSelector}
+        component={Test2}
       />
       <Tab.Screen
         options={{
