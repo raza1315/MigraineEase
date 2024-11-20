@@ -10,7 +10,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 
-export default function PainScale() {
+export default function PainScale({route}) {
+  const {selectedAreas}=route.params;
   const [selectedIntensity, setSelectedIntensity] = useState(null);
   const navigation = useNavigation();
   const painLevels = [
@@ -67,10 +68,10 @@ export default function PainScale() {
     if(selectedIntensity === null){
       return;
     }
-    navigation.navigate("PainArea");
+    navigation.navigate("MedsTaken", { intensity: selectedIntensity,selectedAreas });
   };
   useEffect(() => {
-    console.log("Selected pain intensity:", selectedIntensity);
+    console.log("Selected pain areas:", selectedAreas);
   }, [selectedIntensity]);
 
   return (
@@ -96,6 +97,7 @@ export default function PainScale() {
         </Text>
         {painLevels.map((level, index) => (
           <View
+          key={index}
             style={{
               height: 115,
               width: "100%",

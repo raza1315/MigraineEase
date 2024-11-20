@@ -13,7 +13,10 @@ import { AntDesign, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import Welcome from "../Screens/Welcome";
 import SignIn from "../Screens/SignIn";
 import SignUp from "../Screens/SignUp";
-import Test from "../Screens/Test";
+import AttackTypes from "../Screens/AttackType";
+import MedsTaken from "../Screens/MedsTaken";
+import ReliefMethods from "../Screens/ReliefMethods";
+import AttackTimeSelector from "../Screens/Test2";
 import Home from "../Screens/Home";
 import DoctorAppointment from "../Screens/DoctorAppointment";
 import AppointmentRecords from "../Screens/AppointmentRecords";
@@ -22,6 +25,9 @@ import MedicationRecords from "../Screens/MedicationRecords";
 import Settings from "../Screens/Settings";
 import ChatRoom from "../Screens/ChatRoom";
 import ChatScreen from "../Screens/ChatScreen";
+import { useNavigation } from "@react-navigation/native";
+import PainScale from "../Screens/PainScale";
+import PainArea from "../Screens/PainArea";
 
 const WaveCircle = ({ delay = 0, duration = 2000 }) => {
   const animation = useRef(new Animated.Value(0)).current;
@@ -67,7 +73,7 @@ const Navigation = () => {
   return (
     <View style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="MainTabs">
+        <Stack.Navigator initialRouteName="PainArea">
           <Stack.Screen
             name="welcome"
             component={Welcome}
@@ -109,6 +115,26 @@ const Navigation = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="PainArea"
+            component={PainArea}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="PainScale"
+            component={PainScale}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="MedsTaken"
+            component={MedsTaken}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ReliefMethods"
+            component={ReliefMethods}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="MainTabs"
             component={TabNavigation}
             options={{ headerShown: false }}
@@ -120,6 +146,7 @@ const Navigation = () => {
 };
 
 const TabNavigation = () => {
+  const navigation = useNavigation();
   const Tab = createBottomTabNavigator();
   return (
     <Tab.Navigator
@@ -179,14 +206,19 @@ const TabNavigation = () => {
           },
         }}
         name="test"
-        component={Test}
+        component={AttackTypes}
       />
       <Tab.Screen
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => {
             return (
-              <TouchableOpacity style={[styles.navItem, styles.centerButton]}>
+              <TouchableOpacity
+                style={[styles.navItem, styles.centerButton]}
+                onPress={() => {
+                  navigation.navigate("PainScale");
+                }}
+              >
                 <WaveCircle delay={0} />
                 <WaveCircle delay={500} />
                 <WaveCircle delay={1000} />
@@ -203,7 +235,7 @@ const TabNavigation = () => {
           },
         }}
         name="migraine"
-        component={Test}
+        component={AttackTimeSelector}
       />
       <Tab.Screen
         options={{
