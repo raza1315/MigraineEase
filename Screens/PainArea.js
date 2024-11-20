@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const PainArea = () => {
+const PainArea = ({route}) => {
+  const {startTime, endTime} = route.params;
   const navigation = useNavigation();
   const [selectedAreas, setSelectedAreas] = useState([]);
 
@@ -17,8 +18,8 @@ const PainArea = () => {
   const isSelected = (area) => selectedAreas.includes(area);
 
   const handleNext = () => {
-    console.log(selectedAreas)
-    navigation.navigate('PainScale', { selectedAreas });
+    console.log(selectedAreas,startTime,endTime);
+    navigation.navigate('PainScale', { selectedAreas, startTime, endTime });
   };
 
   const renderTouchableArea = (area, top, left, right, width = 25, height = 25) => (

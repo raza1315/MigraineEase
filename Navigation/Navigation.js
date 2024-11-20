@@ -16,6 +16,7 @@ import SignUp from "../Screens/SignUp";
 import AttackTypes from "../Screens/AttackType";
 import MedsTaken from "../Screens/MedsTaken";
 import ReliefMethods from "../Screens/ReliefMethods";
+import Conclusion from "../Screens/Conclusion";
 import AttackTimeSelector from "../Screens/Test2";
 import Home from "../Screens/Home";
 import DoctorAppointment from "../Screens/DoctorAppointment";
@@ -28,6 +29,7 @@ import ChatScreen from "../Screens/ChatScreen";
 import { useNavigation } from "@react-navigation/native";
 import PainScale from "../Screens/PainScale";
 import PainArea from "../Screens/PainArea";
+import TimeSelection from "../Screens/Timer";
 
 const WaveCircle = ({ delay = 0, duration = 2000 }) => {
   const animation = useRef(new Animated.Value(0)).current;
@@ -73,7 +75,7 @@ const Navigation = () => {
   return (
     <View style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="PainArea">
+        <Stack.Navigator initialRouteName="MainTabs">
           <Stack.Screen
             name="welcome"
             component={Welcome}
@@ -115,6 +117,11 @@ const Navigation = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="Timer"
+            component={TimeSelection}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="PainArea"
             component={PainArea}
             options={{ headerShown: false }}
@@ -132,6 +139,11 @@ const Navigation = () => {
           <Stack.Screen
             name="ReliefMethods"
             component={ReliefMethods}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Conclusion"
+            component={Conclusion}
             options={{ headerShown: false }}
           />
           <Stack.Screen
@@ -216,7 +228,7 @@ const TabNavigation = () => {
               <TouchableOpacity
                 style={[styles.navItem, styles.centerButton]}
                 onPress={() => {
-                  navigation.navigate("PainScale");
+                  navigation.navigate("Timer");
                 }}
               >
                 <WaveCircle delay={0} />

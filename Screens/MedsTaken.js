@@ -4,17 +4,17 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   Modal,
   TextInput,
   ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MedsTaken({ route }) {
   const navigation = useNavigation();
-  const { intensity, selectedAreas } = route.params;
+  const { intensity, selectedAreas, startTime, endTime } = route.params;
   const [selectedMeds, setSelectedMeds] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [showDosageModal, setShowDosageModal] = useState(false);
@@ -87,6 +87,8 @@ export default function MedsTaken({ route }) {
       intensity,
       selectedAreas,
       medsTaken,
+      startTime,
+      endTime,
     });
   };
   useEffect(() => {
@@ -247,7 +249,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#1C1B1F",
     padding: 20,
-    paddingTop: 50,
+    paddingTop: 10,
   },
   title: {
     fontSize: 24,

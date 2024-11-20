@@ -4,14 +4,16 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  StatusBar
+  StatusBar,
+  StyleSheet,
 } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 
-export default function PainScale({route}) {
-  const {selectedAreas}=route.params;
+export default function PainScale({ route }) {
+  const { selectedAreas,startTime, endTime  } = route.params;
   const [selectedIntensity, setSelectedIntensity] = useState(null);
   const navigation = useNavigation();
   const painLevels = [
@@ -65,10 +67,15 @@ export default function PainScale({route}) {
 
   const handleNext = () => {
     console.log("Selected pain intensity:", selectedIntensity);
-    if(selectedIntensity === null){
+    if (selectedIntensity === null) {
       return;
     }
-    navigation.navigate("MedsTaken", { intensity: selectedIntensity,selectedAreas });
+    navigation.navigate("MedsTaken", {
+      startTime,
+      endTime,
+      intensity: selectedIntensity,
+      selectedAreas,
+    });
   };
   useEffect(() => {
     console.log("Selected pain areas:", selectedAreas);
@@ -97,7 +104,7 @@ export default function PainScale({route}) {
         </Text>
         {painLevels.map((level, index) => (
           <View
-          key={index}
+            key={index}
             style={{
               height: 115,
               width: "100%",
@@ -242,29 +249,44 @@ export default function PainScale({route}) {
             marginBottom: 20,
           }}
         >
-          <TouchableOpacity
+          <View
             style={{
-              backgroundColor: "rgba(255,255,255,0.2)",
               width: "100%",
-              height: 50,
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 10,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 50,
             }}
-            onPress={handleNext}
           >
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "bold",
-                color: "rgba(255,255,255,0.7)",
-              }}
+            <TouchableOpacity
+              style={styles.navButton}
+              onPress={() => navigation.goBack()}
             >
-              Next
-            </Text>
-          </TouchableOpacity>
+              <Feather name="chevron-left" size={24} color="#F4F3F1" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.navButton} onPress={handleNext}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  color: "rgba(255,255,255,0.7)",
+                }}
+              >
+                <Feather name="chevron-right" size={24} color="#F4F3F1" />
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </SafeAreaView>
     </LinearGradient>
   );
 }
+const styles = StyleSheet.create({
+  navButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
