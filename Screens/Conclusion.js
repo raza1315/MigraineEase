@@ -77,7 +77,7 @@ export default function Conclusion({ route }) {
         });
         setTimeout(() => {          
           navigation.navigate("MainTabs",{screen:"home"});
-        },1500)
+        },1000)
       }
       else{
         Toast.show({

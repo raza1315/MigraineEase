@@ -44,5 +44,20 @@ router.get("/getMigraineAttacks/:userId", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// /migraineAttack/checkStillGoing
+router.get("/checkStillGoing/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const stillGoing = await db("migraine_attacks").where({
+      user_id: userId,
+      end_time: null,
+    }).first();
+    res.status(200).json(stillGoing);
+  } catch (error) {
+    console.log("Error in /migraineAttack/checkStillGoing", error);
+    res.status(500).json({ error: error.message });
+  }
+})
 //export router:
 module.exports = router;

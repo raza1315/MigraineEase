@@ -17,19 +17,6 @@ export default function Component() {
   const [pickerMode, setPickerMode] = useState("date");
   const [tempDate, setTempDate] = useState(new Date());
   const [selectedStartPreset, setSelectedStartPreset] = useState(null);
-
-  const getUserId = async () => {
-    const userId = await AsyncStorage.getItem("userId");
-    setUserId(userId);
-  };
-  useEffect(() => {
-    if (isFocused) {
-      getUserId();
-      if(userId){
-        
-      }
-    }
-  });
   useEffect(() => {
     if (startTime && typeof endTime !== "string" && endTime < startTime) {
       Alert.alert("Invalid Time", "End time must be after start time");

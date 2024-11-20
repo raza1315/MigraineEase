@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const Test = () => {
+const EndTime = () => {
   return (
     <View>
-      <Text>AttackType</Text>
+      <Text>EndTime</Text>
     </View>
   )
 }
 
-export default Test
+export default EndTime

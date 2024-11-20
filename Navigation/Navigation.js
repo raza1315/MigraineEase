@@ -13,7 +13,6 @@ import { AntDesign, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import Welcome from "../Screens/Welcome";
 import SignIn from "../Screens/SignIn";
 import SignUp from "../Screens/SignUp";
-import Test from "../Screens/Test";
 import MedsTaken from "../Screens/MedsTaken";
 import ReliefMethods from "../Screens/ReliefMethods";
 import Conclusion from "../Screens/Conclusion";
@@ -30,6 +29,8 @@ import { useNavigation } from "@react-navigation/native";
 import PainScale from "../Screens/PainScale";
 import PainArea from "../Screens/PainArea";
 import TimeSelection from "../Screens/Timer";
+import EndTime from "../Screens/EndTime";
+import MigraineCalendar from "../Screens/MigraineCalendar";
 
 const WaveCircle = ({ delay = 0, duration = 2000 }) => {
   const animation = useRef(new Animated.Value(0)).current;
@@ -147,6 +148,11 @@ const Navigation = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="EndTime"
+            component={EndTime}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="MainTabs"
             component={TabNavigation}
             options={{ headerShown: false }}
@@ -217,8 +223,8 @@ const TabNavigation = () => {
             );
           },
         }}
-        name="test"
-        component={Test}
+        name="MigraineCalendar"
+        component={MigraineCalendar}
       />
       <Tab.Screen
         options={{
