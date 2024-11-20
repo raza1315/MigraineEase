@@ -17,6 +17,30 @@ export default function Component() {
   const [pickerMode, setPickerMode] = useState("date");
   const [tempDate, setTempDate] = useState(new Date());
   const [selectedStartPreset, setSelectedStartPreset] = useState(null);
+
+  const getUserId = async () => {
+    const userId = await AsyncStorage.getItem("userId");
+    setUserId(userId);
+  };
+  const checkStillGoing = async () => {
+    console.log("started checking");
+    const res = await fetch(
+      `${process.env.EXPO_PUBLIC_SERVER_URL}/migraineAttack/checkStillGoing/${userId}`
+    );
+    if (res.status === 200) {
+      const data = await res.json();
+      navigation.navigate("EndTime", { data });
+    }
+  };
+  useEffect(() => {
+    getUserId();
+    checkStillGoing();
+    if (isFocused) {
+      console.log("focused");
+      if (userId) {
+      }
+    }
+  }, [isFocused, userId]);
   useEffect(() => {
     if (startTime && typeof endTime !== "string" && endTime < startTime) {
       Alert.alert("Invalid Time", "End time must be after start time");

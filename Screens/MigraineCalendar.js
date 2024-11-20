@@ -3,8 +3,9 @@ import { View, Text, TouchableOpacity, StyleSheet, FlatList, ScrollView } from '
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
+import { useNavigation } from '@react-navigation/native';
 export default function MigraineCalendar() {
+  const navigation = useNavigation();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [migraineData, setMigraineData] = useState({});
@@ -32,7 +33,6 @@ export default function MigraineCalendar() {
       }
 
       const rawData = await res.json();
-
       const formattedData = rawData.reduce((acc, item) => {
         const dateKey = new Date(item.created_at).toISOString().split('T')[0];
         if (!acc[dateKey]) {
@@ -46,13 +46,15 @@ export default function MigraineCalendar() {
           intensity: item.intensity,
           pain_parts: item.pain_parts,
           medsTaken: medsFormatted,
-          reliefMethods: item.relief_methods
+          reliefMethods: item.relief_methods,
+          start_time: item.start_time,
+          end_time: item.end_time
         });
         return acc;
       }, {});
 
       setMigraineData(formattedData);
-      console.log('Formatted Migraine Data:', formattedData);
+      // console.log('Formatted Migraine Data:', formattedData);
     } catch (error) {
       console.error('Failed to fetch migraine attacks:', error.message);
     }
@@ -158,7 +160,7 @@ export default function MigraineCalendar() {
 
   const renderMigraineItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => console.log(item)}
+      onPress={() => {console.log(item); navigation.navigate('MigraineDetails', { migraine: item });}}
       style={styles.migraineItem}>
       <Text style={styles.migraineTime}>
         {item.startTime} - {item.endTime}

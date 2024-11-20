@@ -31,6 +31,7 @@ import PainArea from "../Screens/PainArea";
 import TimeSelection from "../Screens/Timer";
 import EndTime from "../Screens/EndTime";
 import MigraineCalendar from "../Screens/MigraineCalendar";
+import MigraineDetails from "../Screens/MigraineDetails";
 
 const WaveCircle = ({ delay = 0, duration = 2000 }) => {
   const animation = useRef(new Animated.Value(0)).current;
@@ -145,6 +146,11 @@ const Navigation = () => {
           <Stack.Screen
             name="Conclusion"
             component={Conclusion}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="MigraineDetails"
+            component={MigraineDetails}
             options={{ headerShown: false }}
           />
           <Stack.Screen
