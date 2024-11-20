@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Modal, TextInput, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 
-export default function ReliefMethods({route}) {
-  const {intensity,selectedAreas,medsTaken}=route.params;
+export default function ReliefMethods({ route }) {
+  const { intensity, selectedAreas, medsTaken } = route.params;
   const navigation = useNavigation();
   const [selectedMethods, setSelectedMethods] = useState({});
   const [showModal, setShowModal] = useState(false);
@@ -43,27 +43,23 @@ export default function ReliefMethods({route}) {
       setShowModal(false);
     }
   };
-  useEffect(()=>{
-console.log(intensity,selectedAreas,medsTaken,)
-  },[])
 
   const handleNextPress = () => {
-    console.log("Selected relief methods:");
+    let selectedReliefMethods = [];
     if (selectedMethods.noMeasure) {
-      console.log("No measure taken");
+      selectedReliefMethods = [];
     } else {
-      const reliefMethods=[];
-      Object.entries(selectedMethods).forEach(([id, selected]) => {
-        if (selected) {
-          const method = reliefMethods.find(m => m.id.toString() === id);
-          if (method){
-            reliefMethods.push(method.name)
-            console.log(method.name)
-          };
-        }
-      });
+      selectedReliefMethods = reliefMethods
+        .filter(method => selectedMethods[method.id])
+        .map(method => method.name);
     }
-    // navigation.navigate('NextScreen');
+    
+    navigation.navigate('Conclusion', {
+      intensity,
+      selectedAreas,
+      medsTaken,
+      reliefMethods: selectedReliefMethods
+    });
   };
 
   return (
@@ -163,6 +159,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1C1B1F',
     padding: 20,
+    paddingTop:50
   },
   title: {
     fontSize: 24,
