@@ -6,7 +6,7 @@ import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Component() {
+export default function TimeSelection() {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [userId, setUserId] = useState(null);
@@ -33,11 +33,12 @@ export default function Component() {
     }
   };
   useEffect(() => {
-    getUserId();
-    checkStillGoing();
     if (isFocused) {
-      console.log("focused");
+      console.log("fo");
+      getUserId();
       if (userId) {
+        checkStillGoing();
+        console.log("focused");
       }
     }
   }, [isFocused, userId]);
@@ -224,11 +225,11 @@ export default function Component() {
             }
             console.log(startTime.toISOString(), endTime);
             navigation.navigate("PainArea", {
-              startTime: startTime ? startTime.toISOString() : null, // Corrected method
+              startTime: startTime ? startTime.toISOString() : null, 
               endTime:
                 typeof endTime !== "string" && endTime != "Still going"
                   ? endTime.toISOString()
-                  : null, // Ensure endTime is handled properly
+                  : null, 
             });
           }}
         >

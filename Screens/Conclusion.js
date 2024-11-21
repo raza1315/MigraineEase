@@ -127,7 +127,6 @@ export default function Conclusion({ route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Toast style={{zIndex:100}} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.title}>Summary</Text>
 
@@ -229,6 +228,7 @@ export default function Conclusion({ route }) {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <Toast style={{zIndex:100}} />
     </SafeAreaView>
   );
 }

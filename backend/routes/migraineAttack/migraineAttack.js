@@ -49,15 +49,31 @@ router.get("/getMigraineAttacks/:userId", async (req, res) => {
 router.get("/checkStillGoing/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
-    const stillGoing = await db("migraine_attacks").where({
-      user_id: userId,
-      end_time: null,
-    }).first();
+    const stillGoing = await db("migraine_attacks")
+      .where({
+        user_id: userId,
+        end_time: null,
+      })
+      .first();
     res.status(200).json(stillGoing);
   } catch (error) {
     console.log("Error in /migraineAttack/checkStillGoing", error);
     res.status(500).json({ error: error.message });
   }
-})
+});
+
+// /migraineAttack/updateMigraineAttack
+router.put("/updateMigraineAttack", async (req, res) => {
+  try {
+    const { id, endTime } = req.body;
+    await db("migraine_attacks").where({ user_id: id }).update({
+      end_time: endTime,
+    });
+    res.status(200).json({ message: "Records updated successfully" });
+  } catch (error) {
+    console.log("Error in /migraineAttack/updateMigraineAttack", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 //export router:
 module.exports = router;
