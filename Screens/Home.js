@@ -78,10 +78,6 @@ const Home = () => {
               <Text style={styles.attackFreeTime}>8</Text>
             </View>
           </View>
-          {/* <Image
-            source={require("../assets/skyimage.jpeg")}
-            style={styles.bgscene}
-          /> */}
           <Image
             source={require("../assets/headache.png")}
             style={styles.headacheImage}
@@ -163,7 +159,6 @@ const Home = () => {
               </View>
               <TouchableOpacity
                 style={styles.joinButton}
-                onPress={() => navigation.navigate("JoinCommunity")}
               >
                 <Text style={styles.joinButtonText}>Join Now</Text>
               </TouchableOpacity>
