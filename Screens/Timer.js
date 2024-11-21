@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert,StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
@@ -140,6 +140,11 @@ export default function TimeSelection() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar
+        translucent={true}
+        barStyle="light-content"
+        backgroundColor="transparent"
+      />
       <Text style={styles.title}>Start & End time of your attack</Text>
 
       <View style={styles.timeSection}>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated,StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Clock, Activity, Pill, MapPin, Zap, ChevronLeft } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -52,6 +52,11 @@ const MigraineDetails = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar
+        translucent={true}
+        barStyle="dark-content"
+        backgroundColor="transparent"
+      />
       <LinearGradient colors={['#1C1B1F', '#2A2A3C']} style={styles.gradient}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Animated.View style={[styles.header, { opacity: fadeAnim }]}>

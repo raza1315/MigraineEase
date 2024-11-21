@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Dimensions,
+  StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -50,6 +51,11 @@ const Home = () => {
 
   return (
     <LinearGradient colors={["#F0F8FF", "#E6E6FA"]} style={styles.gradient}>
+      <StatusBar
+        translucent={true}
+        barStyle="dark-content"
+        backgroundColor="transparent"
+      />
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.scrollView}>
           {/* Header */}
