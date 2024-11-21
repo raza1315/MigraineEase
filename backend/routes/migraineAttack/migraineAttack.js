@@ -83,7 +83,13 @@ router.get("/attackfreetime/:userId", async (req, res) => {
   const lastEndTime = await db("migraine_attacks")
     .where({ user_id: userId }).whereNotNull("end_time")
     .orderBy("end_time", "desc").first();
+  if(lastEndTime){
     res.status(200).json(lastEndTime);
+  }
+  else{
+    const lastEndTime = await db("users").where({ user_id: userId }).first();
+    res.status(200).json({...lastEndTime,end_time:lastEndTime.created_at});
+  }
   } catch (error) {
     console.log("Error in /migraineAttack/attackfreetime", error);
     res.status(500).json({ error: error.message });

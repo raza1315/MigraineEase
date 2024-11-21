@@ -48,7 +48,7 @@ if(isFocused){
         setLastMigraine(formattedDuration);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error fetching last migraine Attack:", error);
     }
   };
   const getDurationFromNow = (startDateString) => {
