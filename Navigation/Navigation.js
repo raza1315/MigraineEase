@@ -77,7 +77,7 @@ const Navigation = () => {
   return (
     <View style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="MainTabs">
+        <Stack.Navigator initialRouteName="welcome">
           <Stack.Screen
             name="welcome"
             component={Welcome}
