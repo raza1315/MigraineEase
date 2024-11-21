@@ -77,6 +77,17 @@ router.put("/updateMigraineAttack", async (req, res) => {
 });
 
 // /migraineAttack/attackfreetime
-
+router.get("/attackfreetime/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+  const lastEndTime = await db("migraine_attacks")
+    .where({ user_id: userId }).whereNotNull("end_time")
+    .orderBy("end_time", "desc").first();
+    res.status(200).json(lastEndTime);
+  } catch (error) {
+    console.log("Error in /migraineAttack/attackfreetime", error);
+    res.status(500).json({ error: error.message });
+  }
+})
 //export router:
 module.exports = router;

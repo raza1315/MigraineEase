@@ -19,8 +19,63 @@ const { width } = Dimensions.get("window");
 const Home = () => {
   const [name, setName] = useState("");
   const [image, setImage] = useState(null);
+  const [lastMigraine, setLastMigraine] = useState("");
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  useEffect(() => {
+if(isFocused){
+  getLastMigraine();
+}
+  },[isFocused]);
+  const getLastMigraine = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      const res = await fetch(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/migraineAttack/attackfreetime/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const result = await res.json();
+      if (res.status === 200) {
+        console.log(result.end_time.toLocaleString());
+        const duration = getDurationFromNow(result.end_time);
+        const formattedDuration = `${duration.hours}h ${duration.minutes}m ${duration.seconds}s`;
+        console.log(formattedDuration);
+        setLastMigraine(formattedDuration);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+  const getDurationFromNow = (startDateString) => {
+    // Parse the start date string (e.g., "2024-11-21T06:45:00.000Z")
+    const startDate = new Date(startDateString);
+    
+    // Get the current date and time
+    const currentDate = new Date();
+  
+    // Calculate the difference in milliseconds
+    const differenceInMillis = currentDate - startDate;
+  
+    // Calculate the duration in hours, minutes, and seconds
+    const seconds = Math.floor(differenceInMillis / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+  
+    const remainingMinutes = minutes % 60;
+    const remainingSeconds = seconds % 60;
+  
+    // Return the formatted duration
+    return {
+      hours,
+      minutes: remainingMinutes,
+      seconds: remainingSeconds,
+    };
+  };
   const fetchUserData = async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
@@ -81,7 +136,7 @@ const Home = () => {
               <Text style={styles.attackFreeText}>
                 You have been attack free for
               </Text>
-              <Text style={styles.attackFreeTime}>8</Text>
+              <Text style={styles.attackFreeTime}>{lastMigraine}</Text>
             </View>
           </View>
           <Image
@@ -163,9 +218,7 @@ const Home = () => {
                   style={styles.communityLogo}
                 />
               </View>
-              <TouchableOpacity
-                style={styles.joinButton}
-              >
+              <TouchableOpacity style={styles.joinButton}>
                 <Text style={styles.joinButtonText}>Join Now</Text>
               </TouchableOpacity>
             </View>
