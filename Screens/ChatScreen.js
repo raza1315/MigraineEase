@@ -83,7 +83,7 @@ const ChatScreen = () => {
       console.log(userId);
       console.log(friendId, friendName);
       fetchMessages();
-      const newSocket = io(`${process.env.EXPO_PUBLIC_SERVER_URL}`);
+      const newSocket = io(`${process.env.EXPO_PUBLIC_SOCKET_URL}`);
       setSocket(newSocket);
       return () => {
         newSocket.disconnect();
@@ -94,13 +94,16 @@ const ChatScreen = () => {
   useEffect(() => {
     if (socket) {
       socket.on("clientListener", (message) => {
-        const time = new Date();
-        const formattedTime = GetTimeOfMsg(time);
-        setChats((prevChats) => [
-          ...prevChats,
-          { ...message, time: formattedTime },
-        ]);
-        scrollToBottom();
+        if(parseInt(message.sender)=== parseInt(friendId) && parseInt(message.receiver) === parseInt(userId)){
+          console.log("matched")
+          const time = new Date();
+          const formattedTime = GetTimeOfMsg(time);
+          setChats((prevChats) => [
+            ...prevChats,
+            { ...message, time: formattedTime },
+          ]);
+          scrollToBottom();
+        }
       });
     }
   }, [socket]);

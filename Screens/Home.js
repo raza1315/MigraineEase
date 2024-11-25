@@ -218,7 +218,9 @@ if(isFocused){
                   style={styles.communityLogo}
                 />
               </View>
-              <TouchableOpacity style={styles.joinButton}>
+              <TouchableOpacity style={styles.joinButton}
+              onPress={()=>navigation.navigate('MainTabs',{screen:"chats"})}
+              >
                 <Text style={styles.joinButtonText}>Join Now</Text>
               </TouchableOpacity>
             </View>

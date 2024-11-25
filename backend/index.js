@@ -53,6 +53,7 @@ io.on("connection", (socket) => {
       receiver: data.receiverId,
       timeStamp: new Date(),
     };
+    console.log(payload);
     await db("chats").insert({
       message: data.message,
       sender_id: data.senderId,
