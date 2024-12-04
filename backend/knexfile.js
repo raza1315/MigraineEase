@@ -1,4 +1,4 @@
-const require('dotenv').config();
+require('dotenv').config();
 module.exports = {
     client: 'pg', 
     connection: {
