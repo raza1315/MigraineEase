@@ -1,11 +1,12 @@
+const require('dotenv').config();
 module.exports = {
     client: 'pg', 
     connection: {
-      host: 'pg-52e82-migraineease.h.aivencloud.com',
-      user: 'avnadmin',
-      password: 'AVNS_1Rnp2g-dtBrxFiWIbrM',
-      database: 'defaultdb',
-      port: 22846,
+      host: process.env.PG_HOST,
+      user: process.env.PG_USER,
+      password: process.env.PG_PASS,
+      database: process.env.PG_DBNAME,
+      port: process.env.PG_PORT,
       ssl: {
         rejectUnauthorized: false
       }
