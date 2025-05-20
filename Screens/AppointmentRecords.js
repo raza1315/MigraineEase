@@ -101,21 +101,18 @@ const AppointmentListScreen = () => {
     setFilteredAppointments(filtered);
   };
 
-  const formatDate = (dateString) => {
+   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const istDate = new Date(date.getTime() + 5.5 * 60 * 60 * 1000); // Convert to IST
-    return istDate.toLocaleDateString("en-IN", {
-      weekday: "short",
+    return date.toLocaleDateString("en-IN", {
       year: "numeric",
       month: "short",
       day: "numeric",
-      timeZone: "Asia/Kolkata",
     });
   };
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
-    const istDate = new Date(date.getTime() + 5.5 * 60 * 60 * 1000); // Convert to IST
+    const istDate = new Date(date.getTime()); // Convert to IST
     return istDate.toLocaleTimeString("en-IN", {
       hour: "2-digit",
       minute: "2-digit",
